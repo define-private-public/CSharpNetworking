@@ -1,0 +1,12 @@
+<h1>DNS</h1>
+
+<p>The <a href="https://msdn.microsoft.com/en-us/library/system.net.dns(v=vs.110).aspx"><code>Dns</code></a> class is a static object contained in <code>System.Net</code> that stands as a tool for domain name services. &nbsp;This is very handy if you want to let your users type in a domain like <code>16bpp.net</code> instead of&nbsp;<code>107.170.178.215</code>. &nbsp;For those of you who don&#39;t know what DNS is or what it does, it&#39;s magic that turns letters into numbers.</p>
+
+<p>The Dns class contains a few methods for resolving host names and other things. &nbsp;You can do it both synchronously and asynchronously. &nbsp;The important methods of this class will either return <a href="https://msdn.microsoft.com/en-us/library/system.net.ipaddress(v=vs.110).aspx"><code>IPAddress</code></a> objects the more detailed <a href="https://msdn.microsoft.com/en-us/library/system.net.iphostentry(v=vs.110).aspx"><code>IPHostEntry</code></a>. &nbsp;The latter is nice if you want to get an <a href="https://en.wikipedia.org/wiki/CNAME_record">aliases associated with the queried hostname</a>. &nbsp;Keep in mind that <strong>one domain name might have multiple IP addresses associated with it</strong>.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/a1d75859466569f3d857a391defa5ea5.js"></script>
+
+<p>&nbsp;</p>
+
+<p>As I said, there is an <a href="https://msdn.microsoft.com/en-us/library/hh194305(v=vs.110).aspx">asynchronous version of <code>Dns.GethostEntry()</code></a>. &nbsp;If you just care about the addresses, there <a href="https://msdn.microsoft.com/en-us/library/system.net.dns.gethostaddresses(v=vs.110).aspx">are methods</a> for <a href="https://msdn.microsoft.com/en-us/library/system.net.dns.gethostaddressesasync(v=vs.110).aspx">that too</a>.</p>

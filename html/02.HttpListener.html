@@ -1,0 +1,69 @@
+<h1>HttpListener</h1>
+
+<p>in a nutshell, <a href="https://msdn.microsoft.com/en-us/library/system.net.httplistener(v=vs.110).aspx"><code>HttpListener</code></a> is a class that will create a HTTP server that will listen and response to requests. &nbsp;I originally thought about writing a TCP server where we would manually handle the HTTP messages ourselves, but after some thinking, this class is a lot easier to work with.</p>
+
+<p>&nbsp;</p>
+
+<div class="alert">
+<p>If you are interested in writing a web app with a C# backend, <code>HttpListener</code>&nbsp;is not the thing to use. &nbsp;I&#39;m sure you&#39;ve heard of the very well tried and true <a href="http://www.asp.net/">ASP.NET</a> platform; please...&nbsp;use that instead. &nbsp;There are other alternatives too, like <a href="http://nancyfx.org/">Nancy</a> or&nbsp;<a href="http://fubuworld.com/fubumvc/">FubuMVC</a>&nbsp;if you don&#39;t like Microsoft&#39;s solution.&nbsp; I&#39;m sure there is some CMS out there written in C# you should be able to modify or write plugins for.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>So for our simple little web site, we want it to do just a few things:</p>
+
+<ol>
+	<li>Deliver a web page to a web browser</li>
+	<li>Show a page view count (dynamic content)</li>
+	<li>Let the user shutdown the Http Server in the browser by clicking a button on the page</li>
+</ol>
+
+<p>Like the last example, we&#39;re going to use <code>async</code> code:</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/d05bc52dd0bed1c4699d49e2737e80e7.js"></script>
+
+<p>&nbsp;</p>
+
+<p>Once the code is running&nbsp;and the terminal reports the server is good, go ahead and visit <a href="http://localhost:8000">http://localhost:8000</a>. &nbsp;Refresh the page a few times, view the console output, and then press the Shutdown button on the web page and try refreshing again. &nbsp;Let&#39;s clarify what&#39;s going on exactly.</p>
+
+<p>When we call <code>Start()</code> on our <code>HttpListener</code> instance, it will open up a TCP socket and start listening for any HTTP messages that are being sent to any of our&nbsp;<code>Prefixes</code> we have added. &nbsp;In this case, we are listening in on port <code>8000</code> of <code>localhost</code>, at the root path. &nbsp;Say if you only wanted the server to respond to messages at the path <code>asdf</code>, you would have to change the value of <code>url</code> to <code>http://localhost:8000/asdf/</code>. &nbsp;Please note that <strong>all of you prefixes need to end with a trailing slash, or an <code>ArgumentException</code> will be thrown</strong>.</p>
+
+<p>When we call <code>listener.GetContextAsync()</code> the function <code>HandleIncomingConnections()</code> will wait until someone has sent a HTTP request to our server (be it a web browser, or with something like <a href="https://16bpp.net/tutorials/csharp-networking/01">a web page downloader</a> like we made in the last section). &nbsp;Once we have a connection, from the <code>HttpListenerContext</code> we can peel out the necessary request and response objects.</p>
+
+<ul>
+	<li><code>HttpListenerRequest</code> tells us about the user (the client)&nbsp;and what they want from us (the server)</li>
+	<li><code>HttpListenerResponse</code> lets us talk to the user</li>
+</ul>
+
+<p>Lines 48 through 54 just print some meta-data about the request. &nbsp;What we care most about is the <code>HttpMethod</code> they sent us and what path they are requesting. &nbsp;If they sent us a <code>POST</code> message to the path <code>/shutdown</code>, this means they have clicked the Shutdown button and want us to terminate the server. &nbsp;But if not, just give them the standard page with a view count. &nbsp;We also want to make sure if they request the file <code>favicon.ico</code> (which almost all browser out there do), we don&#39;t want to add to the page view count.</p>
+
+<p>For the response, we need to write a few things to the header first:</p>
+
+<ol>
+	<li>Specify a <a href="https://en.wikipedia.org/wiki/Media_type">MIME type</a>. &nbsp;We&#39;re just sending plain HTML here, so we use <code>text/html</code></li>
+	<li>Tell the response what the encoding of the message is. &nbsp;Since we want to be good little developers that support internationalization, we use UTF-8</li>
+	<li>Say how many bytes long our message is</li>
+</ol>
+
+<p>Once that is done, we grab <code>OutputStream</code> from the response object and write to it (asynchronously) like any other stream. &nbsp;Lastly, we close the <code>HttpListenerResponse</code> to tell it we&#39;re done with this message. &nbsp;This will also close the stream for us too.</p>
+
+<p>This may go on for a bit (i.e. refreshes), but once&nbsp;the Shutdown button has been pressed, <code>HandleIncomingConnections()</code> will deliver a final message to that client and exit. &nbsp;We also need to clean up all of our we were using&nbsp;resources, like calling <code>listener.Close()</code> to free up any of the ports.</p>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>Now, near the top of the page I told you not to use this for writing web apps, then why would should you use this class at all? <em>&nbsp;Everything has its&nbsp;good use case.</em> &nbsp;For instance, if I wanted to give a user a graphical way of editing a configuration file, this would be great! &nbsp;HTML programming is much easier than desktop GUI programming, it&#39;s better than telling your user &quot;go find this text file and edit it,&quot; (instead you tell them to &quot;point their browser to this URL,&quot;), it comes built into .NET (no extra dependencies), and it&#39;s very simple to use (but keep in mind it doesn&#39;t have many complex features).</p>
+
+<p>&nbsp;</p>
+
+<div class="question">
+<p>There&#39;s one thing that&#39;s not so great about the design of this HTTP server. &nbsp;Look inside the body of <code>while(runServer)</code>. &nbsp;If you&#39;re having some trouble figuring it out, put a call to <code>Thread.Sleep(TimeSpan.FromSeconds(15))</code> at the end of the loop after the response is closed. &nbsp;Then try viewing the page a few times.</p>
+
+<p class="answer_hidden" id="answer1">With how the code is currently structured inside of the loop, only one client can be handled at a time. &nbsp;So if a second client tries to connect while the server is still talking to another user, it will have to wait until the server is done with the first client. &nbsp;A common pattern in server design is to create a new thread or fork the server process immediately after a user has connected to it. &nbsp;This way it can handle new incoming connections while serving that user.</p>
+
+<p><button onclick="showAnswer('answer1');">Show Answer</button></p>
+</div>

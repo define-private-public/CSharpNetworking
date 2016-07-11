@@ -1,0 +1,30 @@
+<h1>HttpClient</h1>
+
+<p>To start things off simple, were just going to make a small utility that will download a web page for us and save it. &nbsp;To do this, we will use the <a href="https://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.118).aspx">HttpClient</a> class.</p>
+
+<p>&nbsp;</p>
+
+<div class="references">
+<p>You will need to add the <code>System.Net.Http</code> Assembly to your project&#39;s references.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p><code>HttpClient</code> works by establishing a connection over TCP to get a response from any server that serves web pages (or responds to HTTP requests). &nbsp;It&#39;s pretty simple to use, but you need to use asynchronous code. &nbsp;This is probably a slightly more complex example of <code>HttpClient</code>, but it shows simple usage of&nbsp;<code>async</code>, <code>await</code>, and <code>Task</code>.</p>
+
+<p>&nbsp;</p>
+
+<p>Our program first sets up a page to get, waits to hear back from the server (a <code>200 HTTP Response</code>), converts the data to a UTF-8 encoded byte array, then lastly saves it to a file name we specify at the top. &nbsp;In the <code>Main()</code> body, as soon as we call <code>DownloadWebPage()</code>, it starts to execute the code inside, but as soon as it hits an <code>await</code> statement&nbsp;execution returns back outside, waiting for the awaited statement to finish. &nbsp;But since the call to <code>Thread.Sleep()</code> is there, it pauses execution inside the main thread for at least five seconds; this doesn&#39;t halt the downloading at all. &nbsp;So if you&#39;re on a good internet connection, the web page should finish downloading before the five seconds are over. &nbsp;If not, then the call to <code>GetAwaiter().GetResult()</code>&nbsp;at the end will block execution until the <code>Task</code> completes.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/dee816034ab934abe3680c06c59cb5e9.js"></script>
+
+<p>&nbsp;</p>
+
+<p>You might notice that there is a lengthier call to <code>dlTask.GetAwaiter().GetResult()</code> at the end of <code>Main()</code>, where we could have just called <code>dlTask.Wait()</code>. &nbsp;We do this because if an exception is thrown by the <code>Task</code>, we will get that original exception thrown to us instead of it being wrapped inside of a <code>AggregateException</code> that would be produced by the <code>Wait()</code>method.</p>
+
+<p>&nbsp;</p>
+
+<p>Right now this program just downloads a single web page from a single resource. &nbsp;A fun exercise for you would be to modify the code to download many different resources from any website.</p>
+
+<p>I would like to thank <a href="https://www.reddit.com/user/AngularBeginner">AngularBeginner</a> of Reddit for suggesting some code improvements.</p>

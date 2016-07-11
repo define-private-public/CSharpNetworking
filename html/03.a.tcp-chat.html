@@ -1,0 +1,36 @@
+<h1>TCP Chat</h1>
+
+<p>Working with those HTTP helper classes might cover a lot of the bases, but I don&#39;t think that&#39;s what everyone wants to use to communicate. &nbsp;When you want to talk to someone over the internet, make sure the message gets there, and in order, then it&#39;s the job for <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> based sockets.</p>
+
+<p><strong>Keep in mind that this is not a tutorial on how TCP works</strong>, just how to use C#&#39;s TCP APIs. &nbsp;If you are looking for one of those, <a href="http://ssfnet.org/Exchange/tcp/tcpTutorialNotes.html">this looks like a good place to start</a>. &nbsp;I&#39;d also recommend watching a few YouTube videos. &nbsp;You don&#39;t need to know the exact details of how TCP works, but it&#39;s a good idea to learn what goes on under the hood. &nbsp;</p>
+
+<p>To start out simply, we are going to make a very simple chat program. &nbsp;There are two main ways of using TCP communications in C#:</p>
+
+<ol>
+	<li>Using a raw <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.socket(v=vs.110).aspx"><code>Socket</code></a> object</li>
+	<li>Using the <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a> and <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcplistener(v=vs.110).aspx"><code>TcpListener</code></a> classes</li>
+</ol>
+
+<p>The former looks pretty close to the <a href="https://en.wikipedia.org/wiki/Berkeley_sockets">Berkeley/POSIX</a> socket API, whereas the latter is a handy wrapper around <code>Socket</code> objects that are using TCP (go figure by the name). &nbsp;Since I want to start things off lightly we will be using <code>TcpClient</code> and <code>TcpListener</code> for our TCP Chat program. &nbsp;Don&#39;t worry, if you&#39;re interested in <code>Socket</code>, we&#39;ll cover that later.</p>
+
+<p>I also want to note that <strong>we will be using synchronous, single-threaded code for this project</strong>. &nbsp;In any real world application, you should be using <code>async</code> &amp; multi-threaded&nbsp;code when working with network operations. &nbsp;I want to keep things simple right now, and after this, I&#39;ll give you a multi-threaded example sometime later. &nbsp;The <code>async</code> methods of <code>TcpClient</code> and <code>TcpListener</code> should be easy to use if you know how to do <code>async</code> programming and know the non-async methods of these two classes.</p>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>We&#39;re going to break the TCP Chat application into three chunks. &nbsp;A Server (to distribute messages), a Messenger (to post messages), a Viewer (to receive messages). &nbsp;If you&#39;re wondering why I&#39;m breaking this into three parts, it&#39;s because I don&#39;t want to have to deal with any GUI code. &nbsp;Since each part will be its own executable, make sure to add three separate Projects to your Solution. &nbsp;We&#39;ll do the Server first, the Messenger second, and the Viewer last.</p>
+
+<p>&nbsp;</p>
+
+<p>TODO: Diagram</p>
+
+<p>TODO: Message protocol</p>
+
+<p>&nbsp;</p>
+
+<div class="tangent">
+<p>It drives me nuts when people write tutorials but make me use things that really aren&#39;t necessary to teach a concept. &nbsp;An example of this would be including GUI code in a networking tutorial; I&#39;ve seen this way too many times in other C# networking tutorials.</p>
+</div>

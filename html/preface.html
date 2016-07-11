@@ -1,0 +1,55 @@
+<h1>Preface</h1>
+
+<p>While there are resources out there to learn about C#&#39;s networking capabilities, I had some issues with finding the information myself in some nicely organized and well written tutorials. &nbsp;I&#39;ve don network programming in other languages, but had no idea how to use C#&#39;s APIs. &nbsp;I know that there are other people out there like me, so I thought about writing a set of tutorials about the <code>System.Net</code> namespace.</p>
+
+<p>This is not a tutorial on networking (explicitly), but how to use C#&#39;s networking API.</p>
+
+<p>I work primarily with Linux, therefore Mono will be my runtime of choice (don&#39;t worry, it should still work with Microsoft&#39;s .NET VM). &nbsp;I&#39;ll make sure the code provided can be run in just a command line interface, so we won&#39;t need to worry about GUI programming at all. &nbsp;I&#39;ll try to keep the example simple and short, but I&nbsp;may include some larger and more complex applications. &nbsp;I will also include full source code for each example/tutorial.</p>
+
+<p>Through this tutorial&#39;s sections, you might see messages like the one below, it&#39;s a good idea to pay attention to them (like the one below for Linux users).</p>
+
+<p>&nbsp;</p>
+
+<div class="linux">
+<p>If you run Ubuntu (or a variant of it like me), make sure you have Mono installed from <a href="http://www.mono-project.com/docs/getting-started/install/linux/">the project&#39;s official repository</a>. &nbsp;It&#39;s more up to date than the one in the Canonical repos. &nbsp;Be sure to install the <code>ca-certificates-mono</code>&nbsp;package. &nbsp;This makes it much easier for you to use SSL with Mono.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>I&#39;ll try to keep the amount of extra dependencies &amp; packages to a minimum. For the basic stuff, we shouldn&#39;t need anything more than what&#39;s provided to us in <code>System.Net</code>.</p>
+
+<p>&nbsp;</p>
+
+<h2>How To Use This Guide</h2>
+
+<p>The main tutorial sequence is numbered off on the left. &nbsp;You don&#39;t&nbsp;<em>have</em>&nbsp;to follow it in order, or read all of them, but it&#39;s recommended. &nbsp;Everything else that isn&#39;t numbered are just one-off, &quot;micro-tutorials.&quot;</p>
+
+<p>I recommend reading all of the text. &nbsp;Do&nbsp;not skimming anything. &nbsp;When it comes to code, try not to just copy n&#39; paste the example. &nbsp;While it may take more time and effort, copying the code by writing it out in your editor is probably the best way to learn and memorize it. &nbsp;It&#39;s what I do with most of the tutorials I read online. &nbsp;I suggest you make one solution to contain this tutorial, but one project in the solution for each topic/section.</p>
+
+<p>Since we&#39;re also dealing with communications, I highly advise that you have a computer somewhere else in the world where you can run and test these programs. &nbsp;While running a server &amp; client on your local machine is fine for development, it&#39;s not realistic of what happens in the real world. &nbsp;I&#39;d recommend spinning up a VM on a service like <a href="https://cloud.google.com/">Google Cloud Platform</a>, <a href="https://www.digitalocean.com/">Digital Ocean</a>, or <a href="https://aws.amazon.com/">Amazon Web Services</a>.</p>
+
+<p>&nbsp;</p>
+
+<h2>Code Licensing</h2>
+
+<p>All of the code example that I have included will fall under the <a href="http://unlicense.org/">Unlicense</a> (a.k.a.&nbsp;Public Domain), unless otherwise noted. &nbsp;If you end up using my code somewhere, credit for authorship is appreciated.</p>
+
+<p>&nbsp;</p>
+
+<h2>Contacting Me</h2>
+
+<p>If you have any questions, comments, or requests <a href="http://16bpp.net/contact">send me an email</a>. &nbsp;If you send me a message like &quot;Can you look at my code. &nbsp;I don&#39;t know what&#39;s wrong,&quot; or any other technical questions, I&#39;m not likely to respond. &nbsp;If you do copy n&#39; paste code from here, and it turns out to be wrong, please do notify me so I can fix it. &nbsp;All of the examples will be hosted on Github&#39;s Gist service.</p>
+
+<p>&nbsp;</p>
+
+<h2>Coming Soon</h2>
+
+<p>I have many thing that I want to add to this tutorial, but these are in the works. &nbsp;No promises though.</p>
+
+<ul>
+	<li>TCP Client/Server</li>
+	<li>Async TCP Client/Server</li>
+	<li>UDP Client/Server</li>
+	<li>Async UDP Client/Server</li>
+	<li>Lower level Socket API</li>
+</ul>
