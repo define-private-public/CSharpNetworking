@@ -33,6 +33,7 @@ namespace TcpChatViewer
             Port = port;
         }
 
+        // connects to the chat server
         public void Connect()
         {
             // Now try to connect
@@ -68,6 +69,7 @@ namespace TcpChatViewer
             }
         }
 
+        // Requests a disconnect
         public void Disconnect()
         {
             Running = false;
@@ -75,6 +77,7 @@ namespace TcpChatViewer
             Console.WriteLine("Disconnecting from the chat...");
         }
 
+        // Main loop, listens and prints messages from the server
         public void ListenForMessages()
         {
             bool wasRunning = Running;
@@ -111,8 +114,7 @@ namespace TcpChatViewer
                 Thread.Sleep(10);
 
                 // Check the server didn't disconnect us
-                bool disconnected = _isDisconnected(_client);
-                if (disconnected)
+                if (_isDisconnected(_client))
                 {
                     Running = false;
                     Console.WriteLine("Server has disconnected from us.\n:[");
@@ -158,6 +160,7 @@ namespace TcpChatViewer
         protected static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
         {
             viewer.Disconnect();
+            args.Cancel = true;
         }
 
         public static void Main(string[] args)
