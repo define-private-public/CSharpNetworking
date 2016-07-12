@@ -80,9 +80,9 @@ namespace TcpChatServer
 
             // Stop the server, and clean up any connected clients
             foreach (TcpClient v in _viewers)
-                v.Close();
+                _cleanupClient(v);
             foreach (TcpClient m in _messengers)
-                m.Close();
+                _cleanupClient(m);
             _listener.Stop();
 
             // Some info
@@ -118,7 +118,7 @@ namespace TcpChatServer
                     good = true;
                     _viewers.Add(newClient);
 
-                    Console.WriteLine("{0} is a viewer.", endPoint);
+                    Console.WriteLine("{0} is a Viewer.", endPoint);
 
                     // Send them a "hello message"
                     msg = String.Format("Welcome to the \"{0}\" Chat Server!\n", ChatName);
@@ -137,11 +137,17 @@ namespace TcpChatServer
                         _names.Add(name);
                         _messengers.Add(newClient);
 
-                        Console.WriteLine("{0} is a messenger with the name {1}.", endPoint, name);
+                        Console.WriteLine("{0} is a Messenger with the name {1}.", endPoint, name);
 
                         // Tell the viewers we have a new messenger
                         _messageQueue.Enqueue(String.Format("{0} has joined the chat.\n", name));
                     }
+                }
+                else
+                {
+                    // Wasn't either a viewer or messenger, clean up anyways.
+                    Console.WriteLine("Wasn't able to identify {0} as a Viewer or Messenger.", endPoint);
+                    _cleanupClient(newClient);
                 }
             }
 
@@ -162,8 +168,7 @@ namespace TcpChatServer
 
                     // cleanup on our end
                     _viewers.Remove(v);         // Remove from list
-                    v.GetStream().Close();      // close Network Stream
-                    v.Close();                  // Close TCP Client
+                    _cleanupClient(v);
                 }
             }
 
@@ -183,9 +188,7 @@ namespace TcpChatServer
                     // clean up on our end 
                     _messengers.RemoveAt(index);    // Remove from list
                     _names.RemoveAt(index);         // Remove taken name
-                    m.GetStream().Close();          // Close Network Stream
-                    m.Close();                      // Close TCP Client
-
+                    _cleanupClient(m);
                 }
             }
         }
@@ -204,6 +207,13 @@ namespace TcpChatServer
                 // We got a socket error, assume it's disconnected
                 return true;
             }
+        }
+
+        // cleans up resources for a TcpClient
+        private static void _cleanupClient(TcpClient client)
+        {
+            client.GetStream().Close();     // Close network stream
+            client.Close();                 // Close client
         }
 
 

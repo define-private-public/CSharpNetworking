@@ -51,7 +51,7 @@ namespace TcpChatViewer
                 _msgStream.Write(msgBuffer, 0, msgBuffer.Length);     // Blocks
 
                 // check that we're still connected, if the server has not kicked us, then we're in!
-                if (_client.Connected)
+                if (!_isDisconnected(_client))
                 {
                     Running = true;
                 }
