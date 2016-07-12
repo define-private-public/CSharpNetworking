@@ -17,7 +17,7 @@ namespace TcpChatServer
         private List<TcpClient> _messengers = new List<TcpClient>();
 
         // Names that are taken by other messengers
-        private List<string> _names = new List<string>();
+        private Dictionary<TcpClient, string> _names = new Dictionary<TcpClient, string>();
 
         // Messages that need to be sent
         private Queue<string> _messageQueue = new Queue<string>();
@@ -69,10 +69,8 @@ namespace TcpChatServer
 
                 // Do the rest
                 _checkForDisconnects();
-
-                // TODO get new messages
-
-                // TODO send messages
+                _checkForNewMessages();
+                _sendMessages();
 
                 // Use less CPU
                 Thread.Sleep(10);
@@ -130,11 +128,11 @@ namespace TcpChatServer
                     // Okay, so they might be a messenger
                     string name = msg.Substring(msg.IndexOf(':') + 1);
 
-                    if ((name != string.Empty) && (!_names.Contains(name)))
+                    if ((name != string.Empty) && (!_names.ContainsValue(name)))
                     {
                         // They're new here, add them in
                         good = true;
-                        _names.Add(name);
+                        _names.Add(newClient, name);
                         _messengers.Add(newClient);
 
                         Console.WriteLine("{0} is a Messenger with the name {1}.", endPoint, name);
@@ -167,7 +165,7 @@ namespace TcpChatServer
                     Console.WriteLine("Viewer {0} has left.", v.Client.RemoteEndPoint);
 
                     // cleanup on our end
-                    _viewers.Remove(v);         // Remove from list
+                    _viewers.Remove(v);     // Remove from list
                     _cleanupClient(v);
                 }
             }
@@ -178,19 +176,51 @@ namespace TcpChatServer
                 if (_isDisconnected(m))
                 {
                     // Get info about the messenger
-                    int index = _messengers.IndexOf(m);
-                    string name = _names[index];
+                    string name = _names[m];
 
                     // Tell the viewers someone has left
                     Console.WriteLine("Messeger {0} has left.", name);
                     _messageQueue.Enqueue(String.Format("{0} has left the chat", name));
 
                     // clean up on our end 
-                    _messengers.RemoveAt(index);    // Remove from list
-                    _names.RemoveAt(index);         // Remove taken name
+                    _messengers.Remove(m);  // Remove from list
+                    _names.Remove(m);       // Remove taken name
                     _cleanupClient(m);
                 }
             }
+        }
+
+        // See if any of our messengers have sent us a new message, put it in the queue
+        private void _checkForNewMessages()
+        {
+            foreach (TcpClient m in _messengers)
+            {
+                int messageLength = m.Available;
+                if (messageLength > 0)
+                {
+                    // there is one!  get it and put it into the queue
+                    byte[] msgBuffer = new byte[messageLength];
+                    m.GetStream().Read(msgBuffer, 0, msgBuffer.Length);     // Blocks
+                    _messageQueue.Enqueue(Encoding.UTF8.GetString(msgBuffer));
+                }
+            }
+        }
+
+        // Clears out the message queue (and sends it to all of the viewers
+        private void _sendMessages()
+        {
+            foreach (string msg in _messageQueue)
+            {
+                // Encode the message
+                byte[] msgBuffer = Encoding.UTF8.GetBytes(msg);
+
+                // Send the message to each viewer
+                foreach (TcpClient v in _viewers)
+                    v.GetStream().Write(msgBuffer, 0, msgBuffer.Length);    // Blocks
+            }
+
+            // clear out the queue
+            _messageQueue.Clear();
         }
 
         // Checks if a socket has disconnected
