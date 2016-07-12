@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace TcpChatServer
 {
@@ -16,7 +17,7 @@ namespace TcpChatServer
         private List<TcpClient> _messengers = new List<TcpClient>();
 
         // Names that are taken by other messengers
-        private HashSet<string> _names = new HashSet<string>();
+        private List<string> _names = new List<string>();
 
         // Messages that need to be sent
         private Queue<string> _messageQueue = new Queue<string>();
@@ -26,9 +27,9 @@ namespace TcpChatServer
         public readonly int Port;
         public bool Running { get; private set; }
 
-        // buffer stuff
-        public readonly int BufferSize = 8 * 1024;  // 8KB
-        private byte[] _recvBuffer;
+        // Buffer
+        public readonly int BufferSize = 2 * 1024;  // 2KB
+        private byte[] _msgBuffer;
 
         // Make a new TCP chat server, with our provided name
         public TcpChatServer(string chatName, int port)
@@ -37,9 +38,7 @@ namespace TcpChatServer
             ChatName = chatName;
             Port = port;
             Running = false;
-
-            // Create the buffer
-            _recvBuffer = new byte[BufferSize];
+            _msgBuffer = new byte[BufferSize];
 
             // make the listener
             _listener = new TcpListener(IPAddress.Loopback, Port);
@@ -56,7 +55,7 @@ namespace TcpChatServer
         public void Run()
         {
             // Some info
-            Console.WriteLine("Starting \"{0}\" TCP Chat Server", ChatName);
+            Console.WriteLine("Starting the \"{0}\" TCP Chat Server", ChatName);
             Console.WriteLine("Press Ctrl-C to shut down the server at any time.");
 
             // Make the server run
@@ -70,11 +69,15 @@ namespace TcpChatServer
                 if (_listener.Pending())
                     _handleNewConnection();
 
-                // TODO check for disconnects
+                // Do the rest
+                _checkForDisconnects();
 
                 // TODO get new messages
 
                 // TODO send messages
+
+                // Use less CPU
+                Thread.Sleep(10);
             }
 
             // Stop the server, and clean up any connected clients
@@ -93,16 +96,22 @@ namespace TcpChatServer
             // There is (at least) one, see what they want
             bool good = false;
             TcpClient newClient = _listener.AcceptTcpClient();      // Blocks
-            NetworkStream stream = newClient.GetStream();
+            NetworkStream netStream = newClient.GetStream();
+
+            // Modify the default buffer sizes
+            newClient.SendBufferSize = BufferSize;
+            newClient.ReceiveBufferSize = BufferSize;
 
             // Print some info
-            Console.WriteLine("Handling a new client from {0}", newClient.Client);
+            EndPoint endPoint = newClient.Client.RemoteEndPoint;
+            Console.WriteLine("Handling a new client from {0}...", endPoint);
 
             // Let them identify themselves
-            int bytesRead = stream.Read(_recvBuffer, 0, _recvBuffer.Length);    // Blocks
+            int bytesRead = netStream.Read(_msgBuffer, 0, BufferSize);    // Blocks
+            //Console.WriteLine("Got {0} bytes.", bytesRead);
             if (bytesRead > 0)
             {
-                string msg = Encoding.UTF8.GetString(_recvBuffer, 0, bytesRead);
+                string msg = Encoding.UTF8.GetString(_msgBuffer, 0, bytesRead);
 
                 if (msg == "viewer")
                 {
@@ -110,7 +119,12 @@ namespace TcpChatServer
                     good = true;
                     _viewers.Add(newClient);
 
-                    Console.WriteLine("{0} is a viewer.", newClient.Client);
+                    Console.WriteLine("{0} is a viewer.", endPoint);
+
+                    // Send them a "hello message"
+                    msg = String.Format("Welcome to the \"{0}\" Chat Server!\n", ChatName);
+                    _msgBuffer = Encoding.UTF8.GetBytes(msg);
+                    netStream.Write(_msgBuffer, 0, _msgBuffer.Length);  // Blocks
                 }
                 else if (msg.StartsWith("name:"))
                 {
@@ -124,7 +138,10 @@ namespace TcpChatServer
                         _names.Add(name);
                         _messengers.Add(newClient);
 
-                        Console.WriteLine("{0} is a messenger.", newClient.Client);
+                        Console.WriteLine("{0} is a messenger with the name {1}.", endPoint, name);
+
+                        // Tell the viewers we have a new messenger
+                        _messageQueue.Enqueue(String.Format("{0} has joined the chat.\n", name));
                     }
                 }
             }
@@ -132,6 +149,63 @@ namespace TcpChatServer
             // Do we really want them?
             if (!good)
                 newClient.Close();
+        }
+
+        // Sees if any of the clients have left the chat server
+        private void _checkForDisconnects()
+        {
+            // TODO close the streams too
+
+            // Check the viewers first
+            foreach (TcpClient v in _viewers.ToArray())
+            {
+                if (_isDisconnected(v))
+                {
+                    Console.WriteLine("Viewer {0} has left.", v.Client.RemoteEndPoint);
+
+                    // cleanup on our end
+                    _viewers.Remove(v);
+                    v.GetStream().Close();
+                    v.Close();
+                }
+            }
+
+            // Check the messengers second
+            foreach (TcpClient m in _messengers.ToArray())
+            {
+                if (_isDisconnected(m))
+                {
+                    // Get info about the messenger
+                    int index = _messengers.IndexOf(m);
+                    string name = _names[index];
+
+                    // Tell the viewers someone has left
+                    Console.WriteLine("Messeger {0} has left.", name);
+                    _messageQueue.Enqueue(String.Format("{0} has left the chat", name));
+
+                    // clean up on our end (remove from taken names too)
+                    _names.RemoveAt(index);
+                    m.GetStream().Close();
+                    m.Close();
+
+                }
+            }
+        }
+
+        // Checks if a socket has disconnected
+        // Adapted from -- http://stackoverflow.com/questions/722240/instantly-detect-client-disconnection-from-server-socket
+        private static bool _isDisconnected(TcpClient client)
+        {
+            try
+            {
+                Socket s = client.Client;
+                return s.Poll(10 * 1000, SelectMode.SelectRead) && (s.Available == 0);
+            }
+            catch(SocketException se)
+            {
+                // We got a socket error, assume it's disconnected
+                return true;
+            }
         }
 
 
@@ -148,7 +222,7 @@ namespace TcpChatServer
             // Create the server
             chat = new TcpChatServer("Bad IRC", 6000);
 
-            // Add a handler for Ctrl-C presses
+            // Add a handler for a Ctrl-C press
             Console.CancelKeyPress += InterruptHandler;
 
             // run the chat server

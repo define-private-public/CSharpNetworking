@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01.a.HttpClient", "01.a.HttpClient\01.a.HttpClient.csproj", "{FEA4727D-7D53-453F-ADBF-43527B8D137A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01.HttpClient", "01.a.HttpClient\01.HttpClient.csproj", "{FEA4727D-7D53-453F-ADBF-43527B8D137A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02.HttpListener", "02.HttpListener\02.HttpListener.csproj", "{0D539553-B757-42E9-A9AC-8B9E46F199A0}"
 EndProject
@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPEndPointExample", "IPEndP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPAddressExample", "IPAddressExample\IPAddressExample.csproj", "{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "03.d.TcpChatViewer", "03.c.TcpChatViewer\03.d.TcpChatViewer.csproj", "{73E07A5D-9830-4EC0-BEAB-951870DD1159}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,6 +25,10 @@ Global
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Debug|x86.Build.0 = Debug|x86
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Release|x86.ActiveCfg = Release|x86
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Release|x86.Build.0 = Release|x86
+		{73E07A5D-9830-4EC0-BEAB-951870DD1159}.Debug|x86.ActiveCfg = Debug|x86
+		{73E07A5D-9830-4EC0-BEAB-951870DD1159}.Debug|x86.Build.0 = Debug|x86
+		{73E07A5D-9830-4EC0-BEAB-951870DD1159}.Release|x86.ActiveCfg = Release|x86
+		{73E07A5D-9830-4EC0-BEAB-951870DD1159}.Release|x86.Build.0 = Release|x86
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Debug|x86.ActiveCfg = Debug|x86
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Debug|x86.Build.0 = Debug|x86
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Release|x86.ActiveCfg = Release|x86
