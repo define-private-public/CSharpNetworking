@@ -1,0 +1,8 @@
+<h1>IPAddress</h1>
+
+<p><a href="https://msdn.microsoft.com/en-us/library/system.net.ipaddress(v=vs.110).aspx"><code>IPAddress</code></a> is a very small class in the <code>System.Net</code> namespace. &nbsp;It&#39;s job is to just represent, well, an IP address. &nbsp;It supports both IPv4 and IPv6 type addresses.</p>
+
+<p>You can make new IP address&nbsp;either by supplying a byte array to the constructor, or using the <code>IPAddress.Parse()</code> (or <code>IPAddress.TryParse()</code>) method to get one from a string. Exceptions will be thrown if the IP address is malformed (either via strings or byte arrays). &nbsp;<strong>When using the constructor, if you supply a byte array of exactly four bytes, it will assume you want an IPv4 address</strong>.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/963e6ac36e650c5783b1e1412198a3a8.js"></script>

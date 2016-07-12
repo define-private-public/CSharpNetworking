@@ -21,16 +21,42 @@
 
 <p>&nbsp;</p>
 
+<h2>Design</h2>
+
 <p>We&#39;re going to break the TCP Chat application into three chunks. &nbsp;A Server (to distribute messages), a Messenger (to post messages), a Viewer (to receive messages). &nbsp;If you&#39;re wondering why I&#39;m breaking this into three parts, it&#39;s because I don&#39;t want to have to deal with any GUI code. &nbsp;Since each part will be its own executable, make sure to add three separate Projects to your Solution. &nbsp;We&#39;ll do the Server first, the Messenger second, and the Viewer last.</p>
 
 <p>&nbsp;</p>
 
-<p>TODO: Diagram</p>
-
-<p>TODO: Message protocol</p>
+<div class="tangent">
+<p>It drives me nuts when people write tutorials but make me use things that really aren&#39;t necessary to teach a concept. &nbsp;An example of this would be including GUI code in a tutorial that doesn&#39;t really need it; I&#39;ve seen this way too many times in other C# tutorials.</p>
+</div>
 
 <p>&nbsp;</p>
 
-<div class="tangent">
-<p>It drives me nuts when people write tutorials but make me use things that really aren&#39;t necessary to teach a concept. &nbsp;An example of this would be including GUI code in a networking tutorial; I&#39;ve seen this way too many times in other C# networking tutorials.</p>
-</div>
+<h3>Application Protocol</h3>
+
+<p>For those of you who know their<a href="https://en.wikipedia.org/wiki/OSI_model"> OSI model</a>, we&#39;re going to define our Application Layer protocol now. &nbsp;If you don&#39;t know what that is, it&#39;s how our application will transmit data and interpret it. &nbsp;Note that we have two different types of clients (Messenger and Viewer), so the server needs to treat them different. &nbsp;We will only use plain text (no binary data), and it will all be in UTF-8 encoding.</p>
+
+<p>Starting with the Viewer client:</p>
+
+<ul>
+	<li>After a Viewer establishes a connection with the Server, it will send the message:&nbsp;<code>viewer</code>. &nbsp;The server will then recognize that client as a Viewer.</li>
+	<li>The Server will just send plain text messages to every Viewer client. &nbsp;The Viewer should just display what it has been told.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>The Messenger client:</p>
+
+<ul>
+	<li>After a Messenger establishes a connection with the Server, it will send the message <code>name:MY_NAME</code>, where <strong>MY_NAME</strong>&nbsp;is the name the messenger wants to use (e.g. <code>name:Kevin Bacon</code>). &nbsp;If the name is already taken by another Messenger client, the server should send the message <code>name taken</code> and disconnect the client.</li>
+	<li>Though if the Messenger was successful in connection, the Server should just then listen in for any messages that are sent, and then distribute them to the Viewers.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>This really isn&#39;t the most feature rich protocol design (and not the best), but it&#39;s a nice simple example. &nbsp;If you need some help figuring out the flow of things, take a look at the diagram below.</p>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><strong><span style="font-size:36px"><span style="background-color:#FFFF00">TODO Dataflow Diagram</span></span></strong></p>
