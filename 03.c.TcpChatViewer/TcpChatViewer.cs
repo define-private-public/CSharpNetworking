@@ -12,11 +12,12 @@ namespace TcpChatViewer
         public readonly string ServerAddress;
         public readonly int Port;
         private TcpClient _client;
+
         public bool Running { get; private set; }
+        private bool _disconnectRequested = false;
 
         // Buffer & messaging
         public readonly int BufferSize = 2 * 1024;  // 2KB
-        private byte[] _msgBuffer;
         private NetworkStream _msgStream = null;
 
         public TcpChatViewer(string serverAddress, int port)
@@ -45,8 +46,8 @@ namespace TcpChatViewer
 
                 // Send them the message that we're a viewer
                 _msgStream = _client.GetStream();
-                _msgBuffer = Encoding.UTF8.GetBytes("viewer");
-                _msgStream.Write(_msgBuffer, 0, _msgBuffer.Length);     // Blocks
+                byte[] msgBuffer = Encoding.UTF8.GetBytes("viewer");
+                _msgStream.Write(msgBuffer, 0, msgBuffer.Length);     // Blocks
 
                 // check that we're still connected, if the server has not kicked us, then we're in!
                 if (_client.Connected)
@@ -57,8 +58,7 @@ namespace TcpChatViewer
                 {
                     // Server doens't see us as a viewer, cleanup
                     _cleanupNetworkResources();
-                    Console.WriteLine("The server didn't recognise us as a Viewer.");
-                    Console.WriteLine(":[");
+                    Console.WriteLine("The server didn't recognise us as a Viewer.\n:[");
                 }
             }
             else
@@ -71,6 +71,7 @@ namespace TcpChatViewer
         public void Disconnect()
         {
             Running = false;
+            _disconnectRequested = true;
             Console.WriteLine("Disconnecting from the chat...");
         }
 
@@ -88,8 +89,8 @@ namespace TcpChatViewer
                     //Console.WriteLine("New incoming message of {0} bytes", messageLength);
 
                     // Read the whole message
-                    _msgBuffer = new byte[messageLength];
-                    _msgStream.Read(_msgBuffer, 0, messageLength);      // Blocks
+                    byte[] msgBuffer = new byte[messageLength];
+                    _msgStream.Read(msgBuffer, 0, messageLength);   // Blocks
 
                     // An alternative way of reading
                     //int bytesRead = 0;
@@ -102,7 +103,7 @@ namespace TcpChatViewer
                     //}
 
                     // Decode it and print it
-                    string msg = Encoding.UTF8.GetString(_msgBuffer);
+                    string msg = Encoding.UTF8.GetString(msgBuffer);
                     Console.Write(msg);
                 }
 
@@ -110,7 +111,15 @@ namespace TcpChatViewer
                 Thread.Sleep(10);
 
                 // Check the server didn't disconnect us
-                Running = _client.Connected;
+                bool disconnected = _isDisconnected(_client);
+                if (disconnected)
+                {
+                    Running = false;
+                    Console.WriteLine("Server has disconnected from us.\n:[");
+                }
+
+                // Check that a canel has been requested
+                Running &= !_disconnectRequested;
             }
 
             // Clean up network resources
@@ -125,6 +134,22 @@ namespace TcpChatViewer
             _msgStream?.Close();
             _msgStream = null;
             _client.Close();
+        }
+
+        // Checks if a socket has disconnected
+        // Adapted from -- http://stackoverflow.com/questions/722240/instantly-detect-client-disconnection-from-server-socket
+        private static bool _isDisconnected(TcpClient client)
+        {
+            try
+            {
+                Socket s = client.Client;
+                return s.Poll(10 * 1000, SelectMode.SelectRead) && (s.Available == 0);
+            }
+            catch(SocketException se)
+            {
+                // We got a socket error, assume it's disconnected
+                return true;
+            }
         }
 
 

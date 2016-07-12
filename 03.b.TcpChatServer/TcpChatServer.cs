@@ -29,7 +29,6 @@ namespace TcpChatServer
 
         // Buffer
         public readonly int BufferSize = 2 * 1024;  // 2KB
-        private byte[] _msgBuffer;
 
         // Make a new TCP chat server, with our provided name
         public TcpChatServer(string chatName, int port)
@@ -38,7 +37,6 @@ namespace TcpChatServer
             ChatName = chatName;
             Port = port;
             Running = false;
-            _msgBuffer = new byte[BufferSize];
 
             // make the listener
             _listener = new TcpListener(IPAddress.Loopback, Port);
@@ -107,11 +105,12 @@ namespace TcpChatServer
             Console.WriteLine("Handling a new client from {0}...", endPoint);
 
             // Let them identify themselves
-            int bytesRead = netStream.Read(_msgBuffer, 0, BufferSize);    // Blocks
+            byte[] msgBuffer = new byte[BufferSize];
+            int bytesRead = netStream.Read(msgBuffer, 0, msgBuffer.Length);     // Blocks
             //Console.WriteLine("Got {0} bytes.", bytesRead);
             if (bytesRead > 0)
             {
-                string msg = Encoding.UTF8.GetString(_msgBuffer, 0, bytesRead);
+                string msg = Encoding.UTF8.GetString(msgBuffer, 0, bytesRead);
 
                 if (msg == "viewer")
                 {
@@ -123,8 +122,8 @@ namespace TcpChatServer
 
                     // Send them a "hello message"
                     msg = String.Format("Welcome to the \"{0}\" Chat Server!\n", ChatName);
-                    _msgBuffer = Encoding.UTF8.GetBytes(msg);
-                    netStream.Write(_msgBuffer, 0, _msgBuffer.Length);  // Blocks
+                    msgBuffer = Encoding.UTF8.GetBytes(msg);
+                    netStream.Write(msgBuffer, 0, msgBuffer.Length);    // Blocks
                 }
                 else if (msg.StartsWith("name:"))
                 {
@@ -154,8 +153,6 @@ namespace TcpChatServer
         // Sees if any of the clients have left the chat server
         private void _checkForDisconnects()
         {
-            // TODO close the streams too
-
             // Check the viewers first
             foreach (TcpClient v in _viewers.ToArray())
             {
@@ -164,9 +161,9 @@ namespace TcpChatServer
                     Console.WriteLine("Viewer {0} has left.", v.Client.RemoteEndPoint);
 
                     // cleanup on our end
-                    _viewers.Remove(v);
-                    v.GetStream().Close();
-                    v.Close();
+                    _viewers.Remove(v);         // Remove from list
+                    v.GetStream().Close();      // close Network Stream
+                    v.Close();                  // Close TCP Client
                 }
             }
 
@@ -183,10 +180,11 @@ namespace TcpChatServer
                     Console.WriteLine("Messeger {0} has left.", name);
                     _messageQueue.Enqueue(String.Format("{0} has left the chat", name));
 
-                    // clean up on our end (remove from taken names too)
-                    _names.RemoveAt(index);
-                    m.GetStream().Close();
-                    m.Close();
+                    // clean up on our end 
+                    _messengers.RemoveAt(index);    // Remove from list
+                    _names.RemoveAt(index);         // Remove taken name
+                    m.GetStream().Close();          // Close Network Stream
+                    m.Close();                      // Close TCP Client
 
                 }
             }
@@ -209,14 +207,15 @@ namespace TcpChatServer
         }
 
 
+
         // TODO need to move TcpChatServer to its own thing
         public static TcpChatServer chat;
         protected static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
         {
             chat.Shutdown();
+            args.Cancel = true;
         }
-
-
+            
         public static void Main(string[] args)
         {
             // Create the server
