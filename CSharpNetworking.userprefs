@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="IPEndPointExample/IPEndPointExample.csproj">
+﻿<Properties StartupItem="03.b.TcpChatServer/03.b.TcpChatServer.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="03.b.TcpChatServer/TcpChatServer.cs">
     <Files>
