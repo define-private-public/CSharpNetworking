@@ -53,7 +53,7 @@ namespace TcpChatServer
         public void Run()
         {
             // Some info
-            Console.WriteLine("Starting the \"{0}\" TCP Chat Server", ChatName);
+            Console.WriteLine("Starting the \"{0}\" TCP Chat Server on port {1}.", ChatName, Port);
             Console.WriteLine("Press Ctrl-C to shut down the server at any time.");
 
             // Make the server run
