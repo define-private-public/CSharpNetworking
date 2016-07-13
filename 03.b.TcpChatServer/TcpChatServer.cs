@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Filename:  TcpChatServer.cs        
+// Author:    Benjamin N. Summerton <define-private-public>        
+// License:   Unlicense (http://unlicense.org/)        
+
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Net;
