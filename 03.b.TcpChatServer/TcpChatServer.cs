@@ -39,7 +39,7 @@ namespace TcpChatServer
             Running = false;
 
             // Make the listener on localhost
-            _listener = new TcpListener(IPAddress.Loopback, Port);
+            _listener = new TcpListener(IPAddress.Any, Port);
         }
 
         // If the server is running, this will shut down the server
