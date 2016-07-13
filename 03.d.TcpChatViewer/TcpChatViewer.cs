@@ -12,7 +12,6 @@ namespace TcpChatViewer
         public readonly string ServerAddress;
         public readonly int Port;
         private TcpClient _client;
-
         public bool Running { get; private set; }
         private bool _disconnectRequested = false;
 
@@ -37,13 +36,14 @@ namespace TcpChatViewer
         public void Connect()
         {
             // Now try to connect
-            _client.Connect(ServerAddress, Port);   // Will resolve DNS for us, blocks
+            _client.Connect(ServerAddress, Port);   // Will resolve DNS for us; blocks
+            EndPoint endPoint = _client.Client.RemoteEndPoint;
 
             // check that we're connected
             if (_client.Connected)
             {
                 // got in!
-                Console.WriteLine("Able to connect to the server at {0}:{1}", ServerAddress, Port);
+                Console.WriteLine("Connected to the server at {0}.", endPoint);
 
                 // Send them the message that we're a viewer
                 _msgStream = _client.GetStream();
@@ -52,9 +52,7 @@ namespace TcpChatViewer
 
                 // check that we're still connected, if the server has not kicked us, then we're in!
                 if (!_isDisconnected(_client))
-                {
                     Running = true;
-                }
                 else
                 {
                     // Server doens't see us as a viewer, cleanup
@@ -65,7 +63,7 @@ namespace TcpChatViewer
             else
             {
                 _cleanupNetworkResources();
-                Console.WriteLine("Not able to connect to the server at {0}:{1}", ServerAddress, Port);
+                Console.WriteLine("Wasn't able to connect to the server at {0}.", endPoint);
             }
         }
 
@@ -107,7 +105,7 @@ namespace TcpChatViewer
 
                     // Decode it and print it
                     string msg = Encoding.UTF8.GetString(msgBuffer);
-                    Console.Write(msg);
+                    Console.WriteLine(msg);
                 }
 
                 // Use less CPU
@@ -165,8 +163,10 @@ namespace TcpChatViewer
 
         public static void Main(string[] args)
         {
-            // Setup the viewer
-            viewer = new TcpChatViewer("localhost", 6000);
+            // Setup the Viewer
+            string host = "localhost";//args[0].Trim();
+            int port = 6000;//int.Parse(args[1].Trim());
+            viewer = new TcpChatViewer(host, port);
 
             // Add a handler for a Ctrl-C press
             Console.CancelKeyPress += InterruptHandler;

@@ -119,7 +119,7 @@ namespace TcpChatServer
                     Console.WriteLine("{0} is a Viewer.", endPoint);
 
                     // Send them a "hello message"
-                    msg = String.Format("Welcome to the \"{0}\" Chat Server!\n", ChatName);
+                    msg = String.Format("Welcome to the \"{0}\" Chat Server!", ChatName);
                     msgBuffer = Encoding.UTF8.GetBytes(msg);
                     netStream.Write(msgBuffer, 0, msgBuffer.Length);    // Blocks
                 }
@@ -138,7 +138,7 @@ namespace TcpChatServer
                         Console.WriteLine("{0} is a Messenger with the name {1}.", endPoint, name);
 
                         // Tell the viewers we have a new messenger
-                        _messageQueue.Enqueue(String.Format("{0} has joined the chat.\n", name));
+                        _messageQueue.Enqueue(String.Format("{0} has joined the chat.", name));
                     }
                 }
                 else
@@ -198,10 +198,13 @@ namespace TcpChatServer
                 int messageLength = m.Available;
                 if (messageLength > 0)
                 {
-                    // there is one!  get it and put it into the queue
+                    // there is one!  get it
                     byte[] msgBuffer = new byte[messageLength];
                     m.GetStream().Read(msgBuffer, 0, msgBuffer.Length);     // Blocks
-                    _messageQueue.Enqueue(Encoding.UTF8.GetString(msgBuffer));
+
+                    // Attach a name to it and shove it into the queue
+                    string msg = String.Format("{0}: {1}", _names[m], Encoding.UTF8.GetString(msgBuffer));
+                    _messageQueue.Enqueue(msg);
                 }
             }
         }
@@ -248,7 +251,6 @@ namespace TcpChatServer
 
 
 
-        // TODO need to move TcpChatServer to its own thing
         public static TcpChatServer chat;
         protected static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
         {
@@ -259,7 +261,9 @@ namespace TcpChatServer
         public static void Main(string[] args)
         {
             // Create the server
-            chat = new TcpChatServer("Bad IRC", 6000);
+            string name = "Bad IRC";//args[0].Trim();
+            int port = 6000;//int.Parse(args[1].Trim());
+            chat = new TcpChatServer(name, port);
 
             // Add a handler for a Ctrl-C press
             Console.CancelKeyPress += InterruptHandler;
