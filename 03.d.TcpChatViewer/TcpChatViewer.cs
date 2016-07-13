@@ -125,7 +125,7 @@ namespace TcpChatViewer
                     Console.WriteLine("Server has disconnected from us.\n:[");
                 }
 
-                // Check that a canel has been requested
+                // Check that a cancel has been requested by the user
                 Running &= !_disconnectRequested;
             }
 

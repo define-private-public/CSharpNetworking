@@ -1,14 +1,16 @@
-﻿<Properties StartupItem="03.c.TcpChatMessenger/03.c.TcpChatMessenger.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="03.d.TcpChatViewer/TcpChatViewer.cs">
+﻿<Properties StartupItem="03.b.TcpChatServer/03.b.TcpChatServer.csproj">
+  <MonoDevelop.Ide.Workbench ActiveDocument="03.b.TcpChatServer/TcpChatServer.cs">
     <Files>
-      <File FileName="03.b.TcpChatServer/TcpChatServer.cs" Line="9" Column="11" />
-      <File FileName="03.c.TcpChatMessenger/TcpChatMessenger.cs" Line="10" Column="1" />
-      <File FileName="03.d.TcpChatViewer/TcpChatViewer.cs" Line="8" Column="26" />
+      <File FileName="03.b.TcpChatServer/TcpChatServer.cs" Line="226" Column="27" />
+      <File FileName="03.c.TcpChatMessenger/TcpChatMessenger.cs" Line="126" Column="44" />
+      <File FileName="03.d.TcpChatViewer/TcpChatViewer.cs" Line="128" Column="70" />
     </Files>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.03.b.TcpChatServer PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>

@@ -1,0 +1,59 @@
+<h1>TCP Chat - Recap</h1>
+
+<p>And here we have the collection of programs running on many different Linux machines. &nbsp;The one on the left is my laptop, in the middle is a cloud instance I spun up, and on the right is this server hosting the Server portion. &nbsp;If you&#39;re wondering what my order of operations was:</p>
+
+<ol>
+	<li>I start the server on 16bpp.net, port 6969</li>
+	<li>I connect with the&nbsp;Viewer &amp; Messenger on my laptop</li>
+	<li>I connect with the Viewer &amp; Messenger on the cloud VM</li>
+	<li>I have the &quot;two users,&quot; exchange some playful banter</li>
+	<li>I exit out on my laptop</li>
+	<li>I then kill the server on 16bpp.net
+	<ul>
+		<li>The Viewer &amp; Messenger on the cloud VM then detect the FIN/ACK packets and close</li>
+	</ul>
+	</li>
+</ol>
+
+<p style="text-align:center">&nbsp;</p>
+
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-chat-screenshot.png"><img alt="Running the TCP Chat programs" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-chat-screenshot.png" style="height:500px; width:800px" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>With all that has been said, done, and typed, there are still a few things to go over. &nbsp;<strong>This is not a good implementation of a internet chatting application.</strong>&nbsp;&nbsp;Keep in mind my goal is to teach you the C# # APIs of <code>System.Net</code>. &nbsp;Lets go over what&#39;s&nbsp;<em>oh-so-very</em>&nbsp;wrong:</p>
+
+<ol>
+	<li>The application protocol that was defined <a href="https://16bpp.net/tutorials/csharp-networking/03a">back here</a> is pretty bad.
+
+	<ol>
+		<li>One thing that there should be, is a message where one end tells the other end that it&#39;s disconnecting. &nbsp;I&#39;m not talking about the FIN/ACK packets here. &nbsp;I&#39;m saying that an actual <code>bye</code>&nbsp;message should be sent by the clients/server to tell the other that it will disconnect. &nbsp;Sure, the FIN/ACK packets will still be sent after the <code>bye</code> is sent, but this is a much more graceful method and more descriptive. &nbsp;There are many applications out there (like online video games) that use this to tell if some has quit the application normally (i.e.&nbsp;ragequit) or not.</li>
+		<li>There should also be a &quot;heartbeat,&quot; message somewhere. &nbsp;This is where the clients &amp; server send each other an &quot;I&#39;m still alive,&quot; message every couple of seconds (e.g. 30). &nbsp;These are typically very tiny messages that would just have something such as the time the time the heartbeat was sent, but sometimes I&#39;ve seen people stuff some extra metadata into them. &nbsp;Pings can also double as these too</li>
+		<li>The server should also be sending error messages to clients. &nbsp;Say for example if a Messenger tries to use a name that is already taken, the server should respond with &quot;Error, name taken by someone else.&quot; before closing the connection.</li>
+	</ol>
+	</li>
+	<li>
+	<div class="question">
+	<p>Look at the function <code>_handleNewConnection()</code> in <code>TcpChatServer.cs</code>, there&#39;s something really-really-bad about it. &nbsp;Walk through it and see if you can spot the really-really-bad problem. &nbsp;<em>Hint: <code>netStream.Read()</code></em></p>
+
+	<p class="answer_hidden" id="answer1">If a client connects, but doesn&#39;t send a message. The server is just going to hold here. Forever. We didn&#39;t set any timeouts in the code, so by default the stream will just keep trying to read for a really-really-long time.<br />
+	<br />
+	Someone could just telnet into the Chat Server, but not send a message to identify themselves. This would hold the server hostage.</p>
+
+	<p><button onclick="showAnswer('answer1');">Show Answer</button></p>
+	</div>
+	</li>
+	<li>We should be using timeouts when reading data from the network. &nbsp;Right now the <code>NetworkStream</code>s &nbsp;are waiting for data indefinitely. &nbsp;Take a look at the timeout related properties of <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.networkstream(v=vs.110).aspx"><code>NetworkStream</code></a>.</li>
+	<li>Split the user-end application into two things (Viewer and Messenger) isn&#39;t the most user friendly thing to do. &nbsp;It&#39;s nice for those that just want to listen in, but a hassle for those who want to send &amp; receive messages. &nbsp;This was done though so we wouldn&#39;t have to use any GUI code for this application.</li>
+	<li><strong>Any real world networking application should use&nbsp;<code>async</code> code,&nbsp;be multi-threaded, and have timeouts; there is none here</strong>. &nbsp;Normally, servers will spin up a new thread or process when a new client connects, so it can handle both the newbie as well as the currently connected clients. &nbsp;We could have also used the asynchronous read/write&nbsp;methods on <code>NetworkStream</code>.</li>
+</ol>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>If you have anything to say about this, send me a message. &nbsp;There might have been some major flaws that I&#39;ve missed. &nbsp;I would like to hear about them and put them up here. &nbsp;Also, if you want to have your own fun and try to make this server multi-threade,&nbsp;asynchronous and time&#39;d-out, feel free to do that and send me a link to the code when you&#39;re done. &nbsp;It would be nice to see a &quot;more correct,&quot; version of this.</p>
+
+<p>This also was a much more lengthy example than my other stuff. &nbsp;I&#39;ll try to make the rest of them a bit simpler.</p>

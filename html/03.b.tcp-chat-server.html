@@ -1,0 +1,53 @@
+<h1>TCP Chat - Server</h1>
+
+<p>I&#39;ve seen many networking tutorials that start you with the client code. &nbsp;I think it&#39;s better to start off with the server code first. &nbsp;And there is quite a bit here.</p>
+
+<p>The main two classes that are used here are <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a> &amp; <code><a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcplistener(v=vs.110).aspx">TcpListener</a></code>. &nbsp; In a nutshell, we use <code>TcpListener</code> to listen for incoming connections, then once someone has connected, we spin up a new <code>TcpClient</code> to talk to that remote process.</p>
+
+<p>Here is the code for the server:</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/cea29b56eebaf59714f6c858f26b46d0.js?file=TcpChatServer.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>When instancing the class <code>TcpChatServer</code>, the listener is created but doesn&#39;t start listening until we call <code>Start()</code> on it in the <code>Run()</code> method. &nbsp;<code>IPAddress.Any</code>,&nbsp;means &quot;let anyone from any network interface connect to me.&quot;</p>
+
+<p>The <code>Run()</code> method is the main heart of the program. &nbsp;Like said above, when we make the call to <code>_listener.Start()</code>, the <code>TcpListener</code> will start listening for new incoming TCP connections the port we fed it (6000 our case). &nbsp;If there is a new pending connection (checked via the <code>Pending()</code> method), we break into a function see who the new client is.</p>
+
+<p><code>_handleNewConnection()</code> does what the name implies. &nbsp;After the connection has been established we can grab it&#39;s <code>TcpClient</code> instance by calling <code>AcceptTcpClient</code> in the listener, the client should send a message stating either <code>viewer</code> or <code>name:<strong>MY_NAME</strong></code>.</p>
+
+<ul>
+	<li>If we have a new Viewer, recognize that client as a viewer, and then send them a welcome message</li>
+	<li>If we have a new Messenger, verify that <strong><code>MY_NAME</code></strong> hasn&#39;t been taken yet
+	<ul>
+		<li>If so, enqueue a new message to tell the Viewers that a new friend has joined us</li>
+		<li>Else, close the connection</li>
+	</ul>
+	</li>
+	<li>Anything else,&nbsp;say that we couldn&#39;t identify who they are, and then close the connection</li>
+</ul>
+
+<p>Back in <code>Run()</code>, we check for disconnects, new messages, and then send queued ones in the rest of the loop. &nbsp;There is also a call to <code>Thread.Sleep(10)</code>, so that we save on CPU resources.</p>
+
+<p><code>_checkForDisconnects()</code> &nbsp;are two <code>foreach</code> loops that go through all of the clients and use the <code>_isDisconnected()</code> method to test for the FIN/ACK packets that might have been sent.</p>
+
+<p>&nbsp;</p>
+
+<div class="alert">
+<p>The <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient.connected(v=vs.110).aspx"><code>Connected</code></a> property of <code>TcpClient</code> might seem like the right thing to use here instead of <code>_isDisconnected()</code>, but there&#39;s a problem with that. &nbsp;<code>Connected</code> returns <code>true</code> <strong>only if</strong> the last IO operation was a success. &nbsp;This means that the FIN/ACK might have been sent, but since there were no IO operations on our end, <code>Connected</code> will still return <code>true</code>. &nbsp;Be careful of this.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p><code>_checkForNewMessages()</code> is also a <code>foreach</code> check of all the Messengers. &nbsp;We can use the <code>Available</code> property to see how big their message is (in bytes), and then read that from the client&#39;s <code>NetworkStream</code>.</p>
+
+<p><code>_sendMessages()</code> empties the <code>_messageQueue</code> by writing the the Viewer&#39;s streams.</p>
+
+<p>There is also the function <code>_cleanupClient()</code>. &nbsp;It&#39;s a small helper that closes both the <code>TcpClient</code>&#39;s <code>NetworkStream</code> and itself.</p>
+
+<p>&nbsp;</p>
+
+<div class="info">
+<p>If you are wondering why we need to manually close the stream ourselves, is because the stream is created from the underlying <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.socket(v=vs.110).aspx"><code>Socket</code></a> object (which can be accessed via <code>TcpClient</code>&#39;s <code>Client</code> property). &nbsp;<strong>This means you need to clean it up manually.</strong> &nbsp;<a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient.getstream.aspx">Read more about it here.</a></p>
+</div>

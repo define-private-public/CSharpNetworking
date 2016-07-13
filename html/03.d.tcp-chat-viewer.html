@@ -1,0 +1,13 @@
+<h1>TCP Chat - Viewer</h1>
+
+<p>This is also a much tinier one like the Messenger, in fact, most of the code is pretty similar. &nbsp;Once it has connected to the server, it will get a &quot;hello,&quot; message, and then keep printing out messages until the user presses Ctrl-C.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/cea29b56eebaf59714f6c858f26b46d0.js?file=TcpChatViewer.cs"></script>
+<p>&nbsp;</p>
+
+<p>Similar to the Messenger, we&#39;re using the constructor of <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a> that doesn&#39;t start a connection. &nbsp;We do that in our <code>Connect()</code> method. &nbsp;If we&#39;re connected, we immediately send over&nbsp;the text <code>viewer</code>to tell it that we&nbsp;are, well, a Viewer client. &nbsp;If we are still connected, then we&#39;re safe to assume that the server recognises us as a viewer and will send us messages. &nbsp;As this point, the server has already sent&nbsp;us a message with &quot;Welcome to the &#39;SERVER_NAME&#39; Chat Server&quot;. &nbsp;Though, we don&#39;t find out about it until we enter <code>ListenForMessages()</code>.</p>
+
+<p>In that function, if we are connected, we test to see if there is a new message or not. &nbsp;If there is, <code>TcpClient.Available</code> will report how many bytes are incoming. &nbsp;If so, we then try to read that many bytes from the <code>NetworkStream</code>. &nbsp; The call to <code>Read()</code> will block until that many bytes have been read in. &nbsp;Once the message is received, it will print it out to the user. &nbsp;Like the other programs, we also sleep for 10 milliseconds to conserve CPU resources. &nbsp;Then we do a check for that FIN/ACK packet&nbsp;and a check to see if the user pressed Ctrl-C.</p>
+
+<p>Once we&#39;ve exited the <code>while(Running)</code> loop, we clean up any network resources that we have left over.</p>

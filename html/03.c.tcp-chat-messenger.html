@@ -1,0 +1,23 @@
+<h1>TCP Chat - Messenger</h1>
+
+<p>The Messenger is a lot smaller of a program that the server. &nbsp;It connects, checks if its supplied name is okay, then lets the user spit messages until they want to quit.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/cea29b56eebaf59714f6c858f26b46d0.js?file=TcpChatMessenger.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>There are many different constructors for <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a>. &nbsp; All of them, except for the one with no parameters, will try to connect to the supplied address &amp; port as soon as its instantiated. &nbsp;We use the one with no parameters for ours.</p>
+
+<p>Our <code>Connect()</code> function is what will try to initialize the connection. &nbsp;If we connected successfully, it will send send the message <code>name:<strong>MY_NAME</strong></code>, where <strong><code>MY_NAME</code></strong> is what is provided by the user at run time. &nbsp;If we&#39;re still connected after that, then we&#39;re good to start sending messages. &nbsp;Note that if the user supplies a name that is the empty string, the server will boot them.</p>
+
+<p><code>SendMessages()</code> is our main loop for this program. &nbsp;If we are connected (checked with the&nbsp;<code>Running</code> property), poll the user for some input.</p>
+
+<ul>
+	<li>If the input is either <code>quit</code> or <code>exit</code>, start the process to disconnect from the chat server</li>
+	<li>If the input is non-empty, then send the message to the server</li>
+</ul>
+
+<p>After that, take a 10 millisecond nap (like what the server does). &nbsp;Once rested, verify that we&#39;re still connected by calling <code>_isDisconnected()</code> on our <code>TcpClient</code>.</p>
+
+<p><code>_cleanupNetworkResources()</code> is called just to make sure our <code>NetworkStream</code> is closed as well as the <code>TcpClient</code> we&#39;re using.</p>
