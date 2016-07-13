@@ -1,10 +1,13 @@
+
 <h1>TCP Chat</h1>
 
 <p>Working with those HTTP helper classes might cover a lot of the bases, but I don&#39;t think that&#39;s what everyone wants to use to communicate. &nbsp;When you want to talk to someone over the internet, make sure the message gets there, and in order, then it&#39;s the job for <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> based sockets.</p>
 
 <p><strong>Keep in mind that this is not a tutorial on how TCP works</strong>, just how to use C#&#39;s TCP APIs. &nbsp;If you are looking for one of those, <a href="http://ssfnet.org/Exchange/tcp/tcpTutorialNotes.html">this looks like a good place to start</a>. &nbsp;I&#39;d also recommend watching a few YouTube videos. &nbsp;You don&#39;t need to know the exact details of how TCP works, but it&#39;s a good idea to learn what goes on under the hood. &nbsp;</p>
 
-<p>To start out simply, we are going to make a very simple chat program. &nbsp;There are two main ways of using TCP communications in C#:</p>
+<p>To start out simply, we are going to make a very simple chat program. &nbsp;I don&#39;t want to do your standard &quot;echo server,&quot; like many other tutorials do. &nbsp;If you want one of those <a href="https://blogs.msdn.microsoft.com/jmanning/2004/12/19/simple-tcpclient-echo-clientserver-example/">you can find one here</a>. &nbsp;<strong>This is a much more complex example of using TCP communications</strong>, but I think it should be easy to grasp.</p>
+
+<p>There are two main ways of using TCP communications in C#:</p>
 
 <ol>
 	<li>Using a raw <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.socket(v=vs.110).aspx"><code>Socket</code></a> object</li>
@@ -60,3 +63,12 @@
 <p>&nbsp;</p>
 
 <p style="text-align:center"><strong><span style="font-size:36px"><span style="background-color:#FFFF00">TODO Dataflow Diagram</span></span></strong></p>
+
+<div class="h_line">&nbsp;</div>
+
+<p>&nbsp;</p>
+
+<h2>A Note&nbsp;Before Starting</h2>
+
+<p>There is a lot more code here than my other examples, but there is also a lot of redundancy between the three files. &nbsp;Don&#39;t get discouraged. &nbsp;Take a break if you need to. &nbsp;The Server and the Viewer have &quot;Ctrl-C,&quot; handlers FYI. &nbsp;There are many lines of code that have a comment next to them that tell you if a call blocks or not. &nbsp;Also, around most of the code there aren&#39;t any try-catch blocks like there should be in production code.</p>
+

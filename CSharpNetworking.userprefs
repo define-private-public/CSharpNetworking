@@ -1,10 +1,10 @@
 ﻿<Properties StartupItem="03.c.TcpChatMessenger/03.c.TcpChatMessenger.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="03.b.TcpChatServer/TcpChatServer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="03.d.TcpChatViewer/TcpChatViewer.cs">
     <Files>
-      <File FileName="03.b.TcpChatServer/TcpChatServer.cs" Line="3" Column="24" />
-      <File FileName="03.d.TcpChatViewer/TcpChatViewer.cs" Line="1" Column="1" />
-      <File FileName="03.c.TcpChatMessenger/TcpChatMessenger.cs" Line="1" Column="1" />
+      <File FileName="03.b.TcpChatServer/TcpChatServer.cs" Line="9" Column="11" />
+      <File FileName="03.c.TcpChatMessenger/TcpChatMessenger.cs" Line="10" Column="1" />
+      <File FileName="03.d.TcpChatViewer/TcpChatViewer.cs" Line="8" Column="26" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
