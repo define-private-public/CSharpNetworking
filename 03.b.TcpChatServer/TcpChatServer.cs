@@ -38,15 +38,15 @@ namespace TcpChatServer
             Port = port;
             Running = false;
 
-            // make the listener
+            // Make the listener on localhost
             _listener = new TcpListener(IPAddress.Loopback, Port);
         }
 
         // If the server is running, this will shut down the server
         public void Shutdown()
         {
-            Console.WriteLine("Shutting down server");
             Running = false;
+            Console.WriteLine("Shutting down server");
         }
 
         // Start running the server.  Will stop when `Shutdown()` has been called
@@ -251,7 +251,10 @@ namespace TcpChatServer
 
 
 
+
+
         public static TcpChatServer chat;
+
         protected static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
         {
             chat.Shutdown();

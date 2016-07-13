@@ -52,7 +52,10 @@ namespace TcpChatViewer
 
                 // check that we're still connected, if the server has not kicked us, then we're in!
                 if (!_isDisconnected(_client))
+                {
                     Running = true;
+                    Console.WriteLine("Press Ctrl-C to exit the Viewer at any time.");
+                }
                 else
                 {
                     // Server doens't see us as a viewer, cleanup
@@ -122,7 +125,7 @@ namespace TcpChatViewer
                 Running &= !_disconnectRequested;
             }
 
-            // Clean up network resources
+            // Cleanup
             _cleanupNetworkResources();
             if (wasRunning)
                 Console.WriteLine("Disconnected.");
@@ -154,7 +157,10 @@ namespace TcpChatViewer
 
 
 
+
+
         public static TcpChatViewer viewer;
+
         protected static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
         {
             viewer.Disconnect();
