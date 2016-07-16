@@ -6,3 +6,16 @@
 
 <p>&nbsp;</p>
 <script src="https://gist.github.com/define-private-public/963e6ac36e650c5783b1e1412198a3a8.js"></script>
+
+<p>&nbsp;</p>
+
+<p>Please also note the static fields of <code>IPAddress</code> are very important when creating servers, all of them are read only.</p>
+
+<ul>
+	<li><code>Any</code> - This tells a <code>Socket</code> to listen for connections on any network devices. &nbsp;Which may be coming in locally or via a network</li>
+	<li><code>Loopback</code> - This tells a <code>Socket</code> to listen for connections that are <strong>only</strong> coming in from the local machine (127.0.0.1)</li>
+	<li><code>Broadcast</code> - This provides the broadcast IP address to a socket</li>
+	<li><code>None</code> - This tells a <code>Socket</code> not to listen in for any connections</li>
+</ul>
+
+<p>All of the fields above are for IPv4, but <code>IPAddress</code> has IPv6 versions of most of these static fields.</p>
