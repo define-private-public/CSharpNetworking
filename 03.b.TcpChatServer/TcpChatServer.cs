@@ -42,7 +42,7 @@ namespace TcpChatServer
             Port = port;
             Running = false;
 
-            // Make the listener on localhost
+            // Make the listener listen for connections on any network device
             _listener = new TcpListener(IPAddress.Any, Port);
         }
 
