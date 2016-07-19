@@ -70,10 +70,6 @@ namespace TcpGames
                 _commandHandlers["bye"] = _handleBye;
                 _commandHandlers["message"] = _handleMessage;
                 _commandHandlers["input"] = _handleInput;
-                // No handler for the `hello` command on the Client side
-
-                // Send an empty Packet to tell server our Id (synchronlously)
-                _sendPacket(new Packet("hello")).GetAwaiter().GetResult();
             }
             else
             {

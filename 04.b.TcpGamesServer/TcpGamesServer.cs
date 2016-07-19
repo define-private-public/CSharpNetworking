@@ -130,39 +130,28 @@ namespace TcpGames
             Console.WriteLine("The server has been shut down.");
         }
 
+        // Awaits for a new connection and then adds them to the waiting lobby
         private async Task _handleNewConnection()
         {
             // Get the new client using a Future
             TcpClient newClient = await _listener.AcceptTcpClientAsync();
-
             Console.WriteLine("New connection from {0}.", newClient.Client.RemoteEndPoint);
 
-            // Get the client's Id from the first packet they send
-            Packet helloPacket = await ReceivePacket(newClient);
+            // Store them and put them in the waiting lobby
+            _clients.Add(newClient);
+            _waitingLobby.Add(newClient);
 
-            // Make sure it's a hello, from them, else disconnect them
-            if (helloPacket.Command == "hello")
-            {
-                // Store them and put them in the waiting lobby
-                _clients.Add(newClient);
-                _waitingLobby.Add(newClient);
-
-                // Send a welcome message
-                string msg = String.Format("Welcome to the \"{0}\" Games Server.\n", Name);
-                await SendPacket(newClient, new Packet("message", msg));
-            }
-            else
-            {
-                // Else boot them & clean up their resources
-                await SendPacket(newClient, new Packet("bye", "Please send us a `hello` Packet."));
-                _cleanupClient(newClient);
-            }
+            // Send a welcome message
+            string msg = String.Format("Welcome to the \"{0}\" Games Server.\n", Name);
+            await SendPacket(newClient, new Packet("message", msg));
         }
 
         // Will attempt to gracefully disconnect a TcpClient
         // This should be use for clients that may be in a game, or the waiting lobby
         public void DisconnectClient(TcpClient client, string message="")
         {
+            Console.WriteLine("Disconnecting the client from {0}.", client.Client.RemoteEndPoint);
+
             // If there wasn't a message set, use the default "Goodbye."
             if (message == "")
                 message = "Goodbye.";
