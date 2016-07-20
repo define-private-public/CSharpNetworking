@@ -106,6 +106,28 @@ namespace TcpGames
                     _nextGame = new GuessMyNumberGame(this);
                 }
 
+                // Check if any clients have disconnected in waiting, gracefully or not
+                // NOTE: This could (and should) be parallelized
+                foreach (TcpClient client in _waitingLobby.ToArray())
+                {
+                    EndPoint endPoint = client.Client.RemoteEndPoint;
+                    bool disconnected = false;
+
+                    // Check for graceful first
+                    Packet p = ReceivePacket(client).GetAwaiter().GetResult();
+                    disconnected = (p?.Command == "bye");
+
+                    // Then ungraceful
+                    disconnected |= IsDisconnected(client);
+
+                    if (disconnected)
+                    {
+                        HandleDisconnectedClient(client);
+                        Console.WriteLine("Client {0} has disconnected from the Game(s) Server.", endPoint);
+                    }
+                }
+
+
                 // Take a small nap
                 Thread.Sleep(10);
             }
@@ -172,11 +194,11 @@ namespace TcpGames
 
             // Cleanup resources on our end
             byePacket.GetAwaiter().GetResult();
-            _cleanupClient(client);
+            HandleDisconnectedClient(client);
         }
 
-        // Will clean up resources if a client has sent a "bye," packet to us
-        // meaning they've cleaned up their resources already
+        // Cleans up the resources if a client has disconnected,
+        // gracefully or not.  Will remove them from clint list and lobby
         public void HandleDisconnectedClient(TcpClient client)
         {
             // Remove from collections and free resources
@@ -214,12 +236,17 @@ namespace TcpGames
         }
 
         // Will get a single packet from a TcpClient
-        // This may return null if the client has disconnected
+        // Will return null if there isn't any data available or some other
+        // issue getting data from the client
         public async Task<Packet> ReceivePacket(TcpClient client)
         {
             Packet packet = null;
             try
             {
+                // First check there is data available
+                if (client.Available == 0)
+                    return null;
+
                 NetworkStream msgStream = client.GetStream();
 
                 // There must be some incoming data, the first two bytes are the size of the Packet

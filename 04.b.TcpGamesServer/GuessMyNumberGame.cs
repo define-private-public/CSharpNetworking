@@ -25,7 +25,7 @@ namespace TcpGames
         // Just needs only one player
         public int RequiredPlayers
         {
-            get { return 1; }
+            get { return 3; }
         }                
                 
         // Constructor
@@ -88,17 +88,22 @@ namespace TcpGames
                 _server.SendPacket(_player, inputPacket).GetAwaiter().GetResult();
 
                 // Read their answer
-                Packet answerPacket = _server.ReceivePacket(_player).GetAwaiter().GetResult();
+                Packet answerPacket = null;
+                while (answerPacket == null)
+                {
+                    answerPacket = _server.ReceivePacket(_player).GetAwaiter().GetResult();
+                    Thread.Sleep(10);
+                }
 
                 // Check for graceful disconnect
-                if (answerPacket?.Command == "bye")
+                if (answerPacket.Command == "bye")
                 {
                     _server.HandleDisconnectedClient(_player);
                     clientDisconnectedGracefully = true;
                 }
 
                 // Check input
-                if (answerPacket?.Command == "input")
+                if (answerPacket.Command == "input")
                 {
                     Packet responsePacket = new Packet("message");
 
