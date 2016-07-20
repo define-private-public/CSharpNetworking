@@ -1,0 +1,89 @@
+<h1>TCP Games - Application Protocol</h1>
+
+<p>Let&#39;s first talk about how our clients and server are going to pass around messages/packets. &nbsp;To make this more structured than last time, we will be using <a href="https://en.wikipedia.org/wiki/JSON">JSON</a>, which will only contain plaintext. &nbsp;Each JSON&nbsp;object will only have two fields, <code>command</code> and <code>message</code>.</p>
+
+<ul>
+	<li><code>command</code>: this tells the client/server how the packet should be processed</li>
+	<li><code>message</code>: this adds some extra context for the <code>command</code>. &nbsp;It may be an empty string sometimes</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>We have only&nbsp;three simple <code>command</code>s for each type of packet:</p>
+
+<ol>
+	<li><code>bye</code>: this can be sent by either the server or the client. &nbsp;It notifies the other end that the sender&nbsp;is disconnecting&nbsp;gracefully.&nbsp;
+
+	<ul>
+		<li>If sent by the server to the client, the client should display the contained <code>message</code> and clean up its network resources</li>
+		<li>If sent by the client to the server, the server can choose what to do with the <code>message</code> (if there is one). &nbsp;It should also clean up any resources associated with the client<br />
+		&nbsp;</li>
+	</ul>
+	</li>
+	<li><code>message</code>: <em><span style="color:#FF0000">note that this is a <code>command</code></span></em>. &nbsp;It just sends a plaintext message
+	<ul>
+		<li>If sent&nbsp;by the server to the client, the client should print out the contents of the <code>message</code> field</li>
+		<li>If sent by the client to the server, the server can chose to ignore it. &nbsp;The client shouldn&#39;t be sending&nbsp;<code>message</code> packets anyways<br />
+		&nbsp;</li>
+	</ul>
+	</li>
+	<li><code>input</code>: &nbsp;requests some input
+	<ul>
+		<li>If sent by the server to the client, the client should ask the user for some input
+		<ul>
+			<li>the contents of the <code>message</code> field should be treated as a prompt for the user</li>
+		</ul>
+		</li>
+		<li>If sent by the client to the server, this should only be in response to an <code>input</code> request
+		<ul>
+			<li>If this wasn&#39;t a response to a request, the server should just ignore the packet then</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p>If you&#39;re a little confused, here&#39;s a diagram:</p>
+
+<p style="text-align:center"><span style="font-size:24px"><span style="background-color:#FFFF00">TODO</span><span style="background-color:#FFFF00">&nbsp;message diagram</span></span></p>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Packet class</h2>
+
+<p>Here is our <code>Packet</code> class.&nbsp;&nbsp;ne sure to add it to both projects in your solution.&nbsp; The main reason we have this is so we can access the data in a more C# like way. &nbsp;We will be using <a href="http://www.newtonsoft.com/json">Newtonsoft&#39;s Json.NET</a> library for parsing.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=Packet.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>How it will be sent over the network</h2>
+
+<p>Before we go and shove the <code>Packet</code> into the internet tubes there is a little pre-processing that needs to be done first:</p>
+
+<ol>
+	<li>Call the <code>ToJson()</code> method on the <code>Packet</code> to get it as a <code>string</code>. &nbsp;Then after that, encode it (in UTF-8)&nbsp;into a byte array</li>
+	<li>Get how many bytes are in that first byte array, then encode that number as an <strong>unsigned 16 bit integer</strong> into a second byte array. &nbsp;The resulting array should be <strong>exactly&nbsp;two bytes long</strong></li>
+	<li>Join those two arrays into a new one&nbsp;with the &quot;length buffer,&quot; ahead of&nbsp;the &quot;JSON buffer,&quot;</li>
+</ol>
+
+<p>That final byte array that we have is what will be sent over the network. &nbsp;This way whoever receives a <code>Packet</code>&nbsp;knows how long it is.</p>
+
+<p>&nbsp;</p>
+
+<div class="info">
+<p>You might be wondering why we have to do this. &nbsp;Here&#39;s the thing, <code>TcpClient.Available</code> will report how many bytes have been received but not read yet,<strong> and only that</strong>. &nbsp; There is the possibility that two <code>Packet</code>s may have been received before our app has had a chance to read from the <code>NetworkStream</code>. &nbsp;This poses the question of how we will pull out the data into two separate <code>Packet</code>s.</p>
+
+<p>Since we are using JSON, we could match first level&nbsp;curly brackets. &nbsp;Instead,&nbsp;stuffing the length of the &quot;true message,&quot; right before the actual message is a common technique that is used, and thus it&#39;s best that we practice that here.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>I chose to use unsigned an unsigned 16 bit integer because it lets us have JSON&nbsp;strings that are almost 64 KB long; that&#39;s plenty of data for text based games. &nbsp;We could use just an 8 bit unsigned integer too&nbsp;but that will only give us 255 bytes max, so our messages we send&nbsp;would have to be quite tiny. &nbsp;</p>

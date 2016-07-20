@@ -1,0 +1,34 @@
+<h1>TCP Games</h1>
+
+<p>Alright. &nbsp;Since we&#39;ve already done a single-threaded networked application, what is there to do next? &nbsp;Why a multithreaded one of course! &nbsp;But let&#39;s go the extra mile and use some <code>async</code> code too. &nbsp;<strong>This one turned out to be more complex than I envisioned, but bear with me because it can do more. &nbsp;</strong>Hold tight, it will be fun.</p>
+
+<p>I always find video games as a great way of teaching programming concepts,&nbsp;languages, and libraries. &nbsp;But since I want to keep this tutorial series as &quot;GUI-less,&quot; as possible we&#39;re going to do some text (console) based gaming. &nbsp;Get ready to party like its 1989 because&nbsp;George H. W. Bush has been elected, Tim Burton is directing&nbsp;a Batman film, Milli Vanilli is topping the charts, &nbsp;and Game Boys are all the rage; &nbsp;We&#39;re making a BBS game!! <span style="font-size:9px">(sort-of)</span></p>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><span style="font-size:24px"><span style="background-color:#FFFF00">TODO</span><span style="background-color:#FFFF00"> add some funny picture here (bbs)</span></span></p>
+
+<p style="text-align:center">&nbsp;</p>
+
+<div class="alert">
+<p>Just as a side note, if you want to make a real video game, it would be much, MUCH better to use UDP instead of TCP for most cases. &nbsp;TCP here is optimal since we&#39;re doing text based gaming only and any of the games that we have on the server should be turn-based. &nbsp;UDP is a much better choice if your networked game runs in real time.</p>
+</div>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Before Starting</h2>
+
+<p>If you haven&#39;t read the previous section, <a href="https://16bpp.net/tutorials/csharp-networking/03a">TCP Chat</a>, go do so so you can familiarise yourself with <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a>&nbsp;and <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcplistener(v=vs.110).aspx"><code>TcpListener</code></a>. &nbsp;Part of the design of the server side is so that we can switch out different games. &nbsp;Because of time constraints, I&#39;ve only implemented one game called &quot;Guess My Number,&quot; which is single player. &nbsp;I also wanted to do Tic-Tac-Toe&nbsp;as well (multi-player), but I&#39;ll leave that an exercise for you. &nbsp;It shouldn&#39;t be too difficult.</p>
+
+<p>We only should have two separate projects in our solution for this section. &nbsp;One being the <code>TcpGamesServer</code> and the other the <code>TcpGamesClient</code>. &nbsp;Our namespace for both will be <code>TcpGames</code>.</p>
+
+<p>We also will be using the same <code>_isDisconnected()</code> method to check for ungraceful disconnects. &nbsp;Here it is again:</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/2b28b8d087741f65ec602f95acb3474d.js"></script>
+
+<p>&nbsp;</p>
