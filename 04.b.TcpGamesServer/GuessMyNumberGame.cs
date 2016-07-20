@@ -25,7 +25,7 @@ namespace TcpGames
         // Just needs only one player
         public int RequiredPlayers
         {
-            get { return 3; }
+            get { return 1; }
         }                
                 
         // Constructor
