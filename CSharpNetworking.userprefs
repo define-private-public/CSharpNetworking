@@ -1,16 +1,16 @@
 ﻿<Properties StartupItem="04.b.TcpGamesServer/04.b.TcpGamesServer.csproj">
-  <MonoDevelop.Ide.Workbench ActiveDocument="04.b.TcpGamesServer/TcpGamesServer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="04.e.TcpGamesClient/TCPGamesClient.cs">
     <Files>
-      <File FileName="04.b.TcpGamesServer/TcpGamesServer.cs" Line="103" Column="50" />
-      <File FileName="04.e.TcpGamesClient/TCPGamesClient.cs" Line="72" Column="58" />
-      <File FileName="04.b.TcpGamesServer/GuessMyNumberGame.cs" Line="28" Column="30" />
+      <File FileName="04.b.TcpGamesServer/TcpGamesServer.cs" Line="199" Column="31" />
+      <File FileName="04.e.TcpGamesClient/TCPGamesClient.cs" Line="254" Column="31" />
+      <File FileName="04.b.TcpGamesServer/GuessMyNumberGame.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.ItemProperties.03.b.TcpChatServer PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.03.b.TcpChatServer PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>
