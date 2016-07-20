@@ -180,9 +180,7 @@ namespace TcpGames
             // Send the "bye," message
             Task byePacket = SendPacket(client, new Packet("bye", message));
 
-            // Remove from lobby and connected clients, and notify and running games
-            _clients.Remove(client);
-            _waitingLobby.Remove(client);
+            // Notify a game that might have them
             try
             {
                 _gameClientIsIn[client]?.DisconnectClient(client);   

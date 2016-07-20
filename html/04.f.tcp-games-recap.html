@@ -1,0 +1,31 @@
+<h1>TCP Games - Recap</h1>
+
+<p>I didn&#39;t feel like putting this up on my server, so here&#39;s it running locally. &nbsp;The order of operations were:</p>
+
+<ol>
+	<li>Startup the server (top box)</li>
+	<li>Connect with a client (bottom left), the server starts a Game</li>
+	<li>Connect with a second client (bottom right), the server starts a second Game</li>
+	<li>I fool around a bit until I get the correct answer in the bottom left client</li>
+	<li>I then press Ctrl-C in the top box, shutting down the server, killing any running games and disconnecting (gracefully) any clients</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-games-guess-my-number-screenshot.png"><img alt="" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-games-guess-my-number-screenshot.png" style="height:425px; width:800px" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>As always, there are some problems with anything we do and&nbsp;a few things here we can improve on:</p>
+
+<ol>
+	<li>I mentioned in the server programming part that there was a possible race condition with handling graceful client disconnects. &nbsp;To repeat myself, it was because the server may send a <code>bye</code> <code>Packet</code> and then cleanup the network resources on its end before the client can process that <code>Packet</code>&nbsp;(even though the ACK for that Packet should have been sent to the server before resources are cleaned up).&nbsp; We fixed it by sleeping the calling thread for 100ms. &nbsp;A possible solution might be that the client needs to respond by sending its own <code>bye</code> <code>Packet</code>.</li>
+	<li>It&#39;s possible that the <code>_nextGame</code> might lock the main server thread when attempting to add players. &nbsp;Say if there was only one client in the lobby, but the game kept on rejecting adding them, we&#39;d&nbsp;be in the loop at lines 84 through 95 forever. &nbsp;Any running games would still run, but nothing new would be able to start or connect.</li>
+	<li>Just collecting <code>Task</code> objects returned by<code>_handleNewConnection()</code> (in the server) or <code>_handleIncomingPackets()</code> (in the client) is bad. &nbsp;It&#39;s very possible that those Lists could grow to immense sizes. &nbsp;It would be better to create a structure that could house <code>Task</code>s until they&#39;ve completed and then throw them into&nbsp;the garbage collector.</li>
+	<li>The Games shouldn&#39;t really be handling client disconnects and <code>Packet</code>s as much as they do. &nbsp;In a much better designed application we would have a more complex &quot;Player,&quot; object, handle all types of disconnects, and&nbsp;let the server dispatch <code>Packet</code>s to the Games. &nbsp;The games also notify the server when they are done, placing any current player back into the waiting lobby.</li>
+	<li>There is a lot more we can parallelise&nbsp;and multithread in the server code. &nbsp;Just saying.</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p>I think this has been a good example of a multithreaded/async TCP server. &nbsp;I&#39;m a little disappointed in myself that I got lazy and didn&#39;t implement Tic-Tac-Toe&nbsp;too, but I&#39;ll leave that as an exercise for you to do. &nbsp;I&#39;d love to see it if you get it done (<a href="https://16bpp.net/contact/">send me an email</a>)! &nbsp;If you have any other suggestions for the review, drop me a line. &nbsp;And if you address any the problems I have listed above don&#39;t&#39; hesitate to send me your solution.</p>

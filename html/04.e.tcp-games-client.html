@@ -1,0 +1,34 @@
+<h1>TCP Games - Client</h1>
+
+<p>Now the last thing that we have to do is write the client code. &nbsp;Remember to add the <code>Packet</code> to the client project.</p>
+
+<p>&nbsp;</p>
+
+<div class="package">
+<p>Don&#39;t forget to include the <a href="https://www.nuget.org/packages/newtonsoft.json/">Newtonsoft.Json</a> package in this project too.</p>
+</div>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=TcpGamesClient.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>This code is somewhat similar to the clients that we wrote for the TCP Chat application. &nbsp;Because of the packets, we have added a <code>Dictionary</code> at the top the store functions and to dispatch messages that we&#39;ve received. &nbsp;In the constructor we setup the <code>TcpClient</code> (but don&#39;t connect it) and init some other resources. &nbsp;<code>_cleanupNetworkResources()</code> will close the <code>TcpClient</code> for us and it&#39;s <code>NetworkStream</code>.</p>
+
+<p>The <code>Connect()</code> method is a bit more robust than last time. &nbsp;First it will try to create the connection in a try-catch block. &nbsp;If it wasn&#39;t successful, then nothing else will work. &nbsp;If successful, we yank out the underlying <code>NetworkStream</code> and hook up our <code>Packet</code>&nbsp;dispatchers. &nbsp;<code>Disconnect()</code> will attempt a graceful disconnect with the server by sending a <code>bye</code> <code>Packet</code>.</p>
+
+<p>The <code>Run()</code> method of this class is also the most important part. &nbsp;If we&#39;re connected, <code>_handleIncomingPackets()</code> will do what the name says. &nbsp;Then after that there is a short nap to save on CPU usage and a check for any type of disconnect. &nbsp;After the main loop, we give it one second for any other incoming packets to be handled. &nbsp;Lastly, we clean up the network resources.</p>
+
+<p><code>_sendPacket()</code> will asynchronously send a Packet over to the server. &nbsp;Likewise&nbsp;<code>_handleIncomingPackets()</code> will check for available messages and then dispatch them to their correct handlers.</p>
+
+<p>Since we have three different types of <code>command</code>s that can be sent in a <code>Packet</code>, we&#39;ve got three handlers:</p>
+
+<ul>
+	<li><code>_handlebye()</code> will shutdown the client</li>
+	<li><code>_handleMessage()</code> will print out the contents of the <code>message</code> field to the console</li>
+	<li><code>_handleInput()</code> will request the user for some input from the command line and then send a response to the server</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><code>_isDisconnected()</code> is used to check for ungraceful disconnects from the server (like always). &nbsp;And the last bits of the file are for program execution.</p>

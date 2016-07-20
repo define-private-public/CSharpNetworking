@@ -16,9 +16,10 @@
 
 <p>&nbsp;</p>
 <script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=IGame.cs"></script>
+
 <p>&nbsp;</p>
 
-<p><code>Name</code> is some meta-data of what the game should be called. &nbsp;<code>RequiredPlayers</code> is more important as it tells the server how many players this game needs before starting. &nbsp;The <code>AddPlayer()</code> function is used by the server to &quot;give,&quot; a player to a Game. &nbsp;It should return <code>true</code> if the player was successfully added to the game. &nbsp;The server should only add players before a Game has been started. &nbsp;<code>DisconnectClient()</code> is used to notify a Game if a client has been detected by the server to have disconnected. &nbsp;With this information the Game might choose to end early. &nbsp;The final function <code>Run()</code> is where the main game loop should go, and <strong>this method will be run in its own thread</strong>. &nbsp;It&#39;s the job of <code>Run()</code> to handle any new packets coming in from clients, and to check for possible&nbsp;disconnects.</p>
+<p><code>Name</code> is some meta-data of what the game should be called. &nbsp;<code>RequiredPlayers</code> &nbsp;tells the server how many players this game needs before starting. &nbsp;The <code>AddPlayer()</code> function is used by the server to &quot;give,&quot; a player to a Game. &nbsp;It should return <code>true</code> if the player was successfully added to the game. &nbsp;The server should only add players before a Game has been started. &nbsp;<code>DisconnectClient()</code> is used to notify a Game if a client has been detected by the server to have disconnected. &nbsp;With this information the Game might choose to end early. &nbsp;The final function <code>Run()</code> is where the main game loop should go, and <strong>this method will be run in its own thread</strong>. &nbsp;It&#39;s the job of <code>Run()</code> to handle any new packets coming in from clients, and to check for possible&nbsp;disconnects too.</p>
 
 <div class="h_line">
 <p>&nbsp;</p>
@@ -28,7 +29,33 @@
 
 <h1>The Server</h1>
 
-<p>So there is quite a bit going on here. &nbsp;I&#39;ll be sure to explain at the end. &nbsp;You&#39;ll notice the class <code>GuessMyNumberGame</code>&nbsp;is mentioned, we&#39;ll be adding that in the next section.</p>
+<p>There is quite a bit going on here. &nbsp;The explanation is at the end. &nbsp;You&#39;ll notice the class <code>GuessMyNumberGame</code>&nbsp;is mentioned, we&#39;ll be adding that in the next section, so just pretends it&#39;s already there.</p>
+
+<p>&nbsp;</p>
 <script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=TcpGamesServer.cs"></script>
 
 <p>&nbsp;</p>
+
+<p>Up at the top we have all of our member data. &nbsp;The things to note are the <code>_waitingLobby</code> and <code>_nextGame</code>. &nbsp; <code>_waitingLobby</code> is a List that we are treating as queue, from the name of it you can safely assume its where we store clients that have connected but aren&#39;t in any games right now. &nbsp;<code>_nextGame</code> is where we place the next game that we will run once we have enough clients.</p>
+
+<p>The constructor doesn&#39;t doo much except initialize some data and create a&nbsp;<a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcplistener(v=vs.110).aspx"><code>TcpListener</code></a>. &nbsp;<code>Shutdown()</code> is a method that we will call in an interrupt handler to well, shutdown the server.</p>
+
+<p><code>Run()</code> is the heart of the server. &nbsp;In the beginning we turn on the listener and create a <code>GuessMyNumberGame</code>. &nbsp;If there is a new connection pending, we hand that off to <code>_handleNewConnection()</code>. &nbsp;That method is run as a <code>Task</code>, so its asynchronous. &nbsp;If we have enough players waiting in the lobby then we pull out that many&nbsp;and try to hand them over to the <code>_nextGame</code>. &nbsp;In case a Game doesn&#39;t want to accept a client (I dunno, maybe they don&#39;t like their IP), we put it back onto the end of the lobby. &nbsp;Once all the players have been added, the game is started in a new thread and we setup another <code>GuessMyNumberGame</code> to be queued up. &nbsp;After that, we have a <code>foreach</code> loop check all of the clients in the lobby if they might have disconnected.</p>
+
+<p>Once execution has exited <code>while(Running)</code>, we make sure that any new connection Tasks have completed. &nbsp;We also kill any Games&nbsp;that may be running with the <code>Thread.Abort()</code> method. &nbsp;After that we disconnect all of the clients saying that we are shutting down the server. &nbsp;Lastly we stop listening for new connections.</p>
+
+<p><code>_handleNewConnection()</code> will asynchronously accept any clients and then put them into into the waiting area. &nbsp;We also tell them &quot;hi.&quot;.</p>
+
+<p><code>DisconnectClient()</code> is a method that is used to gracefully end a connection with a client. &nbsp;It will notify any Games that the client is being disconnected by the server (the game will chose how to handle the disconnected client). &nbsp;We have a call to <code>Thread.Sleep()</code> because it&#39;s possible that the <code>bye</code> <code>Packet</code> might have been sent, then the FIN/ACK from the server, but before the client could process it. &nbsp;This would then cause the client to think that there was an ungraceful disconnect. &nbsp;Sleeping for 100ms&nbsp;gives the client enough time to process the message and close before its resources are cleaned up on the server side. <span style="color:#FF0000">(Yes, this might be classified as a race condition, I&#39;ll address it in the Recap section)</span></p>
+
+<p><code>HandleDisconnectedClient()</code> is a little helper to just remove the client from any collections (e.g. the <code>_waitingLobby</code>) and free their resources on the server.</p>
+
+<p><code>SendPacket()</code> is another <code>async</code> method that will transmit a <code>Packet</code>&nbsp;over the network. &nbsp;It handles all of the byte array formatting for us. &nbsp;<code>ReceivePacket()</code> is like that in reverse; it gets a packet. &nbsp;If there&nbsp;is no packet readily available&nbsp;from the requested&nbsp;client, it will return <code>null</code>.</p>
+
+<p>After the transmission methods we have our <code>TcpClient</code> helpers. &nbsp;<code>IsDisconnected()</code> was described in the intro to this section. <code>&nbsp;_cleanupClient()</code>&nbsp;closes some resources of a <code>TcpClient</code>.</p>
+
+<p>And at the end of the class, we just have a little bit of code for program execution. &nbsp;There is an interrupt handler to catch the Ctrl-C presses to quit the server.</p>
+
+<p>&nbsp;</p>
+
+<p>Next, we&#39;re going to implement the <code>GuessMyNumberGame</code>.</p>

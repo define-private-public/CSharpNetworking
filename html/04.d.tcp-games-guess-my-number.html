@@ -1,0 +1,18 @@
+<h1>TCP Games - Guess My Number</h1>
+
+<p>Guess My Number is a very simple game.&nbsp; It&#39;s played by only one player. &nbsp;The server will think of a number between 1 and 100 (included) and then ask the client to guess it. &nbsp;It will tell the client if their guess was too high or too low. &nbsp;Once the user guesses correctly the game will then tell the server to disconnect the player. &nbsp;<strong>Keep in mind the <code>Run()</code> method is run in a separate thread. </strong>&nbsp;While the rest of the server is asynchronous and multithreaded, we&#39;re going to run stuff synchronously and single&nbsp;threaded here.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=GuessMyNumberGame.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>Like said before, it needs to implement the <code>IGame</code> interface. &nbsp;At the top we store a pointer to the <code>TcpGamesServer</code> that is running this game. &nbsp;This way we can access the server&#39;s methods to transmit <code>Packet</code>s. &nbsp;We simply call our game &quot;Guess My Number,&quot; with the <code>Name</code> property. &nbsp;And the <code>RequiredPlayers</code> only is one. &nbsp;In our constructor we also initialize a random number generator.</p>
+
+<p><code>AddPlayer()</code> will only accept one player for the game. &nbsp;If another one is provided, we ignore them and return <code>false</code>.</p>
+
+<p><code>DisconnectClient()</code> is a notifying method. &nbsp;In case we have one and it&#39;s our player, then we need to disconnect them (thus also quitting the Game too).</p>
+
+<p>The <code>Run()</code>&nbsp;method will not start the game unless we have a player. &nbsp;If we do, we send them a <code>message</code> <code>Packet</code> containing the rules. &nbsp;Then we generate our number. &nbsp;In the main game loop we send the user a request for&nbsp;<code>input</code>. &nbsp;Since <code>ReceivePacket()</code> might return a <code>null</code>, we keep checking in a loop until we have one. &nbsp;Our Game has to check for disconnects since we&#39;re now handling the client. &nbsp;If is there is a graceful one we mark it. &nbsp;If we get a response to our <code>input</code> request, we then check it. &nbsp;Based on the <code>input</code>, we see if they were right or wrong and send them a <code>message</code> based upon that. &nbsp;At the end of the main game loop we check for our disconnects (graceful or not).</p>
+
+<p>Once the client has disconnected or guessed the right number, we exit the <code>Run()</code> function. &nbsp;And then our game is over.</p>
