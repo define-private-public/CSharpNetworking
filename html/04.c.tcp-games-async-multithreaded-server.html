@@ -1,6 +1,12 @@
 <h1>TCP Games - Async/Multithreaded Server</h1>
 
-<p>Okay, this source code is the largest chunk of the entire two proejcts. &nbsp;It has async calls all over the place. &nbsp;There actually isn&#39;t too much complex&nbsp;multithreading here.</p>
+<p>Okay, this source code is the largest chunk of the entire two projects. &nbsp;It has async calls all over the place. &nbsp;There actually isn&#39;t too much complex&nbsp;multithreading here.</p>
+
+<p>&nbsp;</p>
+
+<div class="package">
+<p>Don&#39;t forget to add the <a href="https://www.nuget.org/packages/Newtonsoft.Json/">Newtonsoft.Json</a> package&nbsp;to your <code>TcpGamesServer</code> project via NuGet.</p>
+</div>
 
 <p>&nbsp;</p>
 
@@ -10,5 +16,19 @@
 
 <p>&nbsp;</p>
 <script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=IGame.cs"></script>
+<p>&nbsp;</p>
+
+<p><code>Name</code> is some meta-data of what the game should be called. &nbsp;<code>RequiredPlayers</code> is more important as it tells the server how many players this game needs before starting. &nbsp;The <code>AddPlayer()</code> function is used by the server to &quot;give,&quot; a player to a Game. &nbsp;It should return <code>true</code> if the player was successfully added to the game. &nbsp;The server should only add players before a Game has been started. &nbsp;<code>DisconnectClient()</code> is used to notify a Game if a client has been detected by the server to have disconnected. &nbsp;With this information the Game might choose to end early. &nbsp;The final function <code>Run()</code> is where the main game loop should go, and <strong>this method will be run in its own thread</strong>. &nbsp;It&#39;s the job of <code>Run()</code> to handle any new packets coming in from clients, and to check for possible&nbsp;disconnects.</p>
+
+<div class="h_line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h1>The Server</h1>
+
+<p>So there is quite a bit going on here. &nbsp;I&#39;ll be sure to explain at the end. &nbsp;You&#39;ll notice the class <code>GuessMyNumberGame</code>&nbsp;is mentioned, we&#39;ll be adding that in the next section.</p>
+<script src="https://gist.github.com/define-private-public/1705b604b47ece09cdbc8e40588788c2.js?file=TcpGamesServer.cs"></script>
 
 <p>&nbsp;</p>

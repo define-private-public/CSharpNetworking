@@ -28,7 +28,6 @@ namespace TcpGames
         private IGame _nextGame;
 
         // Other data
-        public readonly Guid ServerId = Guid.NewGuid();
         public readonly string Name;
         public readonly int Port;
         public bool Running { get; private set; }
