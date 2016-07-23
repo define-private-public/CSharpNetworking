@@ -60,7 +60,7 @@
 
 <p>&nbsp;</p>
 
-<div class="tutorial-box question">
+<div class="question">
 <p>There&#39;s one thing that&#39;s not so great about the design of this HTTP server. &nbsp;Look inside the body of <code>while(runServer)</code>. &nbsp;If you&#39;re having some trouble figuring it out, put a call to <code>Thread.Sleep(TimeSpan.FromSeconds(15))</code> at the end of the loop after the response is closed. &nbsp;Then try viewing the page a few times.</p>
 
 <p class="answer-hidden" id="answer1">With how the code is currently structured inside of the loop, only one client can be handled at a time. &nbsp;So if a second client tries to connect while the server is still talking to another user, it will have to wait until the server is done with the first client. &nbsp;A common pattern in server design is to create a new thread or fork the server process immediately after a user has connected to it. &nbsp;This way it can handle new incoming connections while serving that user.</p>
