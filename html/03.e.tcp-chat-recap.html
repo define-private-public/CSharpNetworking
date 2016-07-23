@@ -36,7 +36,7 @@
 	<div class="question">
 	<p>Look at the function <code>_handleNewConnection()</code> in <code>TcpChatServer.cs</code>, there&#39;s something really-really-bad about it. &nbsp;Walk through it and see if you can spot the really-really-bad problem. &nbsp;<em>Hint: <code>netStream.Read()</code></em></p>
 
-	<p class="answer_hidden" id="answer1">If a client connects, but doesn&#39;t send a message. The server is just going to hold here. Forever. We didn&#39;t set any timeouts in the code, so by default the stream will just keep trying to read for a really-really-long time.<br />
+	<p class="answer-hidden" id="answer1">If a client connects, but doesn&#39;t send a message. The server is just going to hold here. Forever. We didn&#39;t set any timeouts in the code, so by default the stream will just keep trying to read for a really-really-long time.<br />
 	<br />
 	Someone could just telnet into the Chat Server, but not send a message to identify themselves. This would hold the server hostage.</p>
 
