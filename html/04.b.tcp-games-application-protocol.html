@@ -45,11 +45,11 @@
 
 <p>&nbsp;</p>
 
-<p>If you&#39;re a little confused, here&#39;s a diagram:</p>
+<p>If you&#39;re a little confused, here&#39;s a diagram of how our apps will operate:</p>
 
-<p style="text-align:center"><span style="font-size:24px"><span style="background-color:#FFFF00">TODO</span><span style="background-color:#FFFF00">&nbsp;message diagram</span></span></p>
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-games-packet-diagram.png"><img alt="" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/tcp-games-packet-diagram.png" style="height:746px; width:596px" /></a></p>
 
-<div class="h_line">
+<div class="h-line">
 <p>&nbsp;</p>
 </div>
 
@@ -78,7 +78,7 @@
 
 <p>&nbsp;</p>
 
-<div class="info">
+<div class="tutorial-box info">
 <p>You might be wondering why we have to do this. &nbsp;Here&#39;s the thing, <code>TcpClient.Available</code> will report how many bytes have been received but not read yet,<strong> and only that</strong>. &nbsp; There is the possibility that two <code>Packet</code>s may have been received before our app has had a chance to read from the <code>NetworkStream</code>. &nbsp;This poses the question of how we will pull out the data into two separate <code>Packet</code>s.</p>
 
 <p>Since we are using JSON, we could match first level&nbsp;curly brackets. &nbsp;Instead,&nbsp;stuffing the length of the &quot;true message,&quot; right before the actual message is a common technique that is used, and thus it&#39;s best that we practice that here.</p>

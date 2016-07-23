@@ -2,19 +2,23 @@
 
 <p>Alright. &nbsp;Since we&#39;ve already done a single-threaded networked application, what is there to do next? &nbsp;Why a multithreaded one of course! &nbsp;But let&#39;s go the extra mile and use some <code>async</code> code too. &nbsp;<strong>This one turned out to be more complex than I envisioned, but bear with me because it can do more. &nbsp;</strong>Hold tight, it will be fun.</p>
 
+<p><span style="color:#FF0000">Please note that this section does not have any&nbsp;<code>async</code> <code>Socket</code> programming</span>. &nbsp;That&#39;s something completely different&nbsp;and it will be covered in a later section.</p>
+
 <p>I always find video games as a great way of teaching programming concepts,&nbsp;languages, and libraries. &nbsp;But since I want to keep this tutorial series as &quot;GUI-less,&quot; as possible we&#39;re going to do some text (console) based gaming. &nbsp;Get ready to party like its 1989 because&nbsp;George H. W. Bush has been elected, Tim Burton is directing&nbsp;a Batman film, Milli Vanilli is topping the charts, &nbsp;and Game Boys are all the rage; &nbsp;We&#39;re making a BBS game!! <span style="font-size:9px">(sort-of)</span></p>
 
 <p>&nbsp;</p>
 
-<p style="text-align:center"><span style="font-size:24px"><span style="background-color:#FFFF00">TODO</span><span style="background-color:#FFFF00"> add some funny picture here (bbs)</span></span></p>
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/1989.png"><img alt="" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/1989.png" style="height:400px; width:640px" /></a></p>
+
+<p style="text-align:center"><em>Pictured: 1989</em></p>
 
 <p style="text-align:center">&nbsp;</p>
 
-<div class="alert">
+<div class="tutorial-box alert">
 <p>Just as a side note, if you want to make a real video game, it would be much, MUCH better to use UDP instead of TCP for most cases. &nbsp;TCP here is optimal since we&#39;re doing text based gaming only and any of the games that we have on the server should be turn-based. &nbsp;UDP is a much better choice if your networked game runs in real time.</p>
 </div>
 
-<div class="h_line">
+<div class="h-line">
 <p>&nbsp;</p>
 </div>
 
@@ -26,9 +30,7 @@
 
 <p>We only should have two separate projects in our solution for this section. &nbsp;One being the <code>TcpGamesServer</code> and the other the <code>TcpGamesClient</code>. &nbsp;Our namespace for both will be <code>TcpGames</code>.</p>
 
-<p>We also will be using the same <code>_isDisconnected()</code> method to check for ungraceful disconnects. &nbsp;Note that it's name is slightly different in the server code. &nbsp;Here it is again:</p>  
+<p>We also will be using the same <code>_isDisconnected()</code> method to check for ungraceful disconnects. &nbsp;Note that it&#39;s name is slightly different in the server code. &nbsp;Here it is again:</p>
 
 <p>&nbsp;</p>
 <script src="https://gist.github.com/define-private-public/2b28b8d087741f65ec602f95acb3474d.js"></script>
-
-<p>&nbsp;</p>

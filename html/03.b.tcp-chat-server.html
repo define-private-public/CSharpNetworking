@@ -34,7 +34,7 @@
 
 <p>&nbsp;</p>
 
-<div class="alert">
+<div class="tutorial-box alert">
 <p>The <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient.connected(v=vs.110).aspx"><code>Connected</code></a> property of <code>TcpClient</code> might seem like the right thing to use here instead of <code>_isDisconnected()</code>, but there&#39;s a problem with that. &nbsp;<code>Connected</code> returns <code>true</code> <strong>only if</strong> the last IO operation was a success. &nbsp;This means that the FIN/ACK might have been sent, but since there were no IO operations on our end, <code>Connected</code> will still return <code>true</code>. &nbsp;Be careful of this.</p>
 </div>
 
@@ -48,6 +48,6 @@
 
 <p>&nbsp;</p>
 
-<div class="info">
+<div class="tutorial-box info">
 <p>If you are wondering why we need to manually close the stream ourselves, is because the stream is created from the underlying <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.socket(v=vs.110).aspx"><code>Socket</code></a> object (which can be accessed via <code>TcpClient</code>&#39;s <code>Client</code> property). &nbsp;<strong>This means you need to clean it up manually.</strong> &nbsp;<a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient.getstream.aspx">Read more about it here.</a></p>
 </div>

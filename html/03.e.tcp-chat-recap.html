@@ -33,7 +33,7 @@
 	</ol>
 	</li>
 	<li>
-	<div class="question">
+	<div class="tutorial-box question">
 	<p>Look at the function <code>_handleNewConnection()</code> in <code>TcpChatServer.cs</code>, there&#39;s something really-really-bad about it. &nbsp;Walk through it and see if you can spot the really-really-bad problem. &nbsp;<em>Hint: <code>netStream.Read()</code></em></p>
 
 	<p class="answer-hidden" id="answer1">If a client connects, but doesn&#39;t send a message. The server is just going to hold here. Forever. We didn&#39;t set any timeouts in the code, so by default the stream will just keep trying to read for a really-really-long time.<br />
@@ -48,7 +48,7 @@
 	<li><strong>Any real world networking application should use&nbsp;<code>async</code> code,&nbsp;be multi-threaded, and have timeouts; there is none here</strong>. &nbsp;Normally, servers will spin up a new thread or process when a new client connects, so it can handle both the newbie as well as the currently connected clients. &nbsp;We could have also used the asynchronous read/write&nbsp;methods on <code>NetworkStream</code>.</li>
 </ol>
 
-<div class="h_line">
+<div class="h-line">
 <p>&nbsp;</p>
 </div>
 

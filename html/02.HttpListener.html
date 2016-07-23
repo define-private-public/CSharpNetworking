@@ -4,7 +4,7 @@
 
 <p>&nbsp;</p>
 
-<div class="alert">
+<div class="tutorial-box alert">
 <p>If you are interested in writing a web app with a C# backend, <code>HttpListener</code>&nbsp;is not the thing to use. &nbsp;I&#39;m sure you&#39;ve heard of the very well tried and true <a href="http://www.asp.net/">ASP.NET</a> platform; please...&nbsp;use that instead. &nbsp;There are other alternatives too, like <a href="http://nancyfx.org/">Nancy</a> or&nbsp;<a href="http://fubuworld.com/fubumvc/">FubuMVC</a>&nbsp;if you don&#39;t like Microsoft&#39;s solution.&nbsp; I&#39;m sure there is some CMS out there written in C# you should be able to modify or write plugins for.</p>
 </div>
 
@@ -50,7 +50,7 @@
 
 <p>This may go on for a bit (i.e. refreshes), but once&nbsp;the Shutdown button has been pressed, <code>HandleIncomingConnections()</code> will deliver a final message to that client and exit. &nbsp;We also need to clean up all of our we were using&nbsp;resources, like calling <code>listener.Close()</code> to free up any of the ports.</p>
 
-<div class="h_line">
+<div class="h-line">
 <p>&nbsp;</p>
 </div>
 
@@ -60,7 +60,7 @@
 
 <p>&nbsp;</p>
 
-<div class="question">
+<div class="tutorial-box question">
 <p>There&#39;s one thing that&#39;s not so great about the design of this HTTP server. &nbsp;Look inside the body of <code>while(runServer)</code>. &nbsp;If you&#39;re having some trouble figuring it out, put a call to <code>Thread.Sleep(TimeSpan.FromSeconds(15))</code> at the end of the loop after the response is closed. &nbsp;Then try viewing the page a few times.</p>
 
 <p class="answer-hidden" id="answer1">With how the code is currently structured inside of the loop, only one client can be handled at a time. &nbsp;So if a second client tries to connect while the server is still talking to another user, it will have to wait until the server is done with the first client. &nbsp;A common pattern in server design is to create a new thread or fork the server process immediately after a user has connected to it. &nbsp;This way it can handle new incoming connections while serving that user.</p>
