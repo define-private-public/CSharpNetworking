@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04.b.TcpGamesServer", "04.b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04.e.TcpGamesClient", "04.e.TcpGamesClient\04.e.TcpGamesClient.csproj", "{76423EEC-14BB-44B7-8B7D-30C43F1F539C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "05.Compression", "05.Compression\05.Compression.csproj", "{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -51,6 +53,10 @@ Global
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Debug|x86.Build.0 = Debug|x86
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Release|x86.ActiveCfg = Release|x86
 		{A5206533-0E7E-461D-BC07-E62E224D466F}.Release|x86.Build.0 = Release|x86
+		{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}.Debug|x86.ActiveCfg = Debug|x86
+		{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}.Debug|x86.Build.0 = Debug|x86
+		{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}.Release|x86.ActiveCfg = Release|x86
+		{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}.Release|x86.Build.0 = Release|x86
 		{D70B1782-FFDD-4A42-9597-DA856D42C105}.Debug|x86.ActiveCfg = Debug|x86
 		{D70B1782-FFDD-4A42-9597-DA856D42C105}.Debug|x86.Build.0 = Debug|x86
 		{D70B1782-FFDD-4A42-9597-DA856D42C105}.Release|x86.ActiveCfg = Release|x86

@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="04.b.TcpGamesServer/04.b.TcpGamesServer.csproj">
+﻿<Properties StartupItem="05.Compression/05.Compression.csproj">
   <MonoDevelop.Ide.Workbench ActiveDocument="04.e.TcpGamesClient/TCPGamesClient.cs">
     <Files>
       <File FileName="04.b.TcpGamesServer/TcpGamesServer.cs" Line="199" Column="31" />
