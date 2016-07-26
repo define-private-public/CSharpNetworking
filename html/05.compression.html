@@ -1,0 +1,93 @@
+<h1>Compression</h1>
+
+<p>Before we start with UDP, I want to talk about compression a little bit. &nbsp;Transmitting information over the data tubes we call the internet can take a while. &nbsp;This depends on many different factors that are out of your control&nbsp;like connection speed, where point A and B are (geography), hardware, etc. &nbsp;But there is one factor that you have sway over&nbsp;and that&#39;s the size of the data you want to send. &nbsp;Using compression, you can make the data you want to send slimmer.</p>
+
+<p>Luckily for us, the .NET Framework includes some compression utilities&nbsp;in the <a href="https://msdn.microsoft.com/en-us/library/system.io.compression(v=vs.110).aspx"><code>System.IO.Compression</code></a> namespace. &nbsp;We&#39;re going to look at <a href="https://msdn.microsoft.com/en-us/library/system.io.compression.gzipstream(v=vs.110).aspx"><code>GZipStream</code></a> and <a href="https://msdn.microsoft.com/en-us/library/system.io.compression.deflatestream(v=vs.110).aspx"><code>DeflateStream</code></a> in particular. &nbsp;These two streams use the<a href="https://en.wikipedia.org/wiki/DEFLATE"> DEFLATE algorithm</a> to compress data in a lossless format, which is implemented under the hood with the ever popular <a href="http://www.zlib.net/">zlib library</a>.</p>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>DeflateStream vs. GZipStream</h2>
+
+<div>
+<p>Looking at the two streams you might be a little confused on which one to use. &nbsp;They both use DEFLATE underneath, but why does it matter? Well, <code>DeflateStream</code> will only compress your data&nbsp;whereas <code>GZipStream</code> will do that too, but add some extra information (like a CRC) so you can save the data in the resulting stream directly as a .gz file.</p>
+
+<p><span style="color:#FF0000">Please note that you are not restricted to using only&nbsp;DEFLATE compression in your application.</span> &nbsp;You can always implement a different algorithm in your code or grab something off of NuGet. &nbsp;<code>GZipStream</code> and <code>DeflateStream</code> are built in and just the easiest to use.</p>
+
+<p>Below is the source for a program that shows you how to use the two streams on some data from a file. &nbsp;It also&nbsp;provides a little bit of information about the compressed data:</p>
+</div>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/98d8e985fe74a23ab3797c01c3a689a5.js"></script>
+
+<p>&nbsp;</p>
+
+<p>Here is some of my output. I used both a .bmp image and a small .mp4 to test it. &nbsp;It worked very nicely with the .bmp because it&#39;s <strong>very</strong> uncompressed. &nbsp;Whereas the .mp4 is already compressed in some fashion we couldn&#39;t squeeze that much more out of it.</p>
+
+<pre class="output">
+image.bmp uncompressed is 3.1239 MB large.
+Compressed using DeflateStream (Optimal): 0.3509 MB [11.23%] in 70ms
+Compressed using DeflateStream (Fast): 0.3509 MB [11.23%] in 50ms
+Compressed using GZipStream: 0.3509 MB [11.23%] in 46ms
+
+...
+
+film.mp4 uncompressed is 35.7181 MB large.
+Compressed using DeflateStream (Optimal): 35.3482 MB [98.96%] in 1176ms
+Compressed using DeflateStream (Fast): 35.3482 MB [98.96%] in 1123ms
+Compressed using GZipStream: 35.3482 MB [98.96%] in 1155ms
+</pre>
+
+<p>It might look like all three created the exact same compression and performed similar but keep in mind that we&nbsp;did truncate the printed output. &nbsp;It&#39;s very possible that the actual data created by both <code>Fastest</code> and <code>Optimal</code> are different (as well as their true size).</p>
+
+<p>&nbsp;</p>
+
+<h3>So what&#39;s going on?</h3>
+
+<p>The code here is pretty simple (and duplicated) so there isn&#39;t too much to explain. &nbsp;At top we have a little helper function to computer a file size in Megabytes for us. &nbsp;In the beginning of the <code>Main()</code> function we read in all of the bytes we want to use for our test file. &nbsp;At first we apply <code>Deflate/Optimal</code> on it, then <code>Deflate/Fast</code>, and lastly we try to save it to a .gz file. &nbsp;(Theres also a little bit of benchmarking code too.)</p>
+
+<p>Working with these streams can be a little tricky at first but here&#39;s the procedure:</p>
+
+<ol>
+	<li>Create a stream (e.g. <code>MemoryStream</code>) where the data will be written to</li>
+	<li>Create a <code>DeflateStream</code>/<code>GZipStream</code> providing that first stream as the destination stream, specify the mode/level, and we (optionally) tell the Deflate/GZip to keep the destination stream open after the compression stream is closed.</li>
+	<li>We write the data to the compression stream</li>
+	<li>We then <code>Close()</code> (and thus <code>Flush()</code>) the compression stream
+	<ul>
+		<li>This can be a really odd thing at first to grasp. &nbsp;The compression stream won&#39;t write any data to the destination stream until it has been flushed. &nbsp;<strong>Do this before doing any reading on&nbsp;destination</strong> (you&#39;ll get nothing if you don&#39;t).</li>
+	</ul>
+	</li>
+	<li>Our compressed/uncompressed data is now ready for whatever we want to do with it.</li>
+</ol>
+
+<p>I didn&#39;t include an example of decompressing the data. &nbsp;To do that all you simply need to do is pass in <a href="https://msdn.microsoft.com/en-us/library/system.io.compression.compressionmode(v=vs.110).aspx"><code>CompressionMode.Decompress</code></a> as the second argument in the compression streams&#39; constructor.</p>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>To Compress or Not to Compress</h2>
+
+<p>There are some things you need to consider before compressing data (and sending it over a network).</p>
+
+<ol>
+	<li><em>Is the data large enough where its even worth it?</em>&nbsp;&nbsp;Let&#39;s say that your original data is about 12 bytes long&nbsp;but compressed its 10&nbsp;bytes. &nbsp;Shaving off 16.66% of your data is pretty good, but in the context of only 12 bytes, that&#39;s pretty dismal to have a big impact. &nbsp;If you&#39;re sending 12 bytes per millisecond (which is about 11.7 KB/s) that might be more worth it then.</li>
+	<li><em>Are you actually saving someone time?</em>&nbsp; Saving disk space is always a good reason for compression but in terms of networking, time is an important factor to consider. &nbsp;Using the 12 byte example, let&#39;s say that time to&nbsp;compress/uncompress the data will take two seconds, and the network speed is one byte per second<span style="font-size:9px"><em> (these are obviously not real world numbers)</em></span>. &nbsp;It would take 12 seconds to transmit the data uncompressed (0 + 12 + 0), but then 16&nbsp;seconds for the compressed data (2 + 12 + 2). &nbsp;In this case compressing wastes more time than it saves. &nbsp;Remember, <strong>compression isn&#39;t free</strong>.</li>
+	<li><em>Does it improve the experience of your users?</em>&nbsp;&nbsp;This is a lot more relevant for people who are making real time&nbsp;applications (such as video games), and this is a bit of a combination of the above two.&nbsp; Consider how much data is being compressed/decompressed and the time that it takes. &nbsp;Will the user notice a difference? &nbsp;Will it improve or interfere with the necessary &quot;real time feel,&quot; of your app?</li>
+	<li><em>Is the data already compressed in some fashion?</em>&nbsp; If you want to compress some images, it&#39;s very possible that they have already been compressed, and might not be able to be compressed any further (e.g. PNG). &nbsp;So when you try to apply compression on it, you might end up with a bigger file in the end.</li>
+</ol>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h3>A Quick Note about MessagePack</h3>
+
+<p>When I posted the <a href="https://16bpp.net/tutorials/csharp-networking/04a">last section</a> on Reddit, a user commented that serializing the <code>Packet</code> information to <a href="http://msgpack.org/index.html">MessagePack</a> would have been more efficient than using JSON. &nbsp;If you don&#39;t know what that is, it&#39;s essentially a compressed version of JSON (and it&#39;s fast too). &nbsp;So if your sending JSON like information over a network, you might want to take a look into using MessagePack instead.</p>
