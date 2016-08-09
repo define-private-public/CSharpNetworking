@@ -1,4 +1,8 @@
-﻿using System.Net;
+﻿// Filename:  NetworkMessage.cs        
+// Author:    Benjamin N. Summerton <define-private-public>        
+// License:   Unlicense (http://unlicense.org/)      
+
+using System.Net;
 
 namespace UdpFileTransfer
 {
@@ -9,4 +13,3 @@ namespace UdpFileTransfer
         public Packet Packet { get; set; }
     }
 }
-

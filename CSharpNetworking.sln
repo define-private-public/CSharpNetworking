@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04.e.TcpGamesClient", "04.e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "05.Compression", "05.Compression\05.Compression.csproj", "{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.b.UdpFileReceiver", "06.b.UdpFileReceiver\06.b.UdpFileReceiver.csproj", "{14B9BA4C-7F03-454D-A0E2-F7380328C99C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.e.UdpFileReceiver", "06.b.UdpFileReceiver\06.e.UdpFileReceiver.csproj", "{14B9BA4C-7F03-454D-A0E2-F7380328C99C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.a.UdpFileSender", "06.a.UdpFileSender\06.a.UdpFileSender.csproj", "{E28D759D-2DE2-408D-89C3-70F4D00101C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.d.UdpFileSender", "06.a.UdpFileSender\06.d.UdpFileSender.csproj", "{E28D759D-2DE2-408D-89C3-70F4D00101C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

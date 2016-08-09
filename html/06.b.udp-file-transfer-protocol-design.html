@@ -1,0 +1,55 @@
+<h1>UDP File Transfer - Protocol Design</h1>
+
+<p>This protocol is going to be a bit complex. &nbsp;Since UDP doesn&#39;t have ACKs built in, we&#39;re going to have to add them manually. &nbsp;Not every type of message with have an ACK, just some control ones. &nbsp;The <code>Packet</code> class (code in next part), contains two fields, <code>PacketType</code> (control) and <code>Payload</code> (data). &nbsp;For each type, the data in <code>Payload</code> will be structured differently.</p>
+
+<p>&nbsp;</p>
+
+<h2>Block</h2>
+
+<p>File data&nbsp;will be transferred in <code>Block</code>s. &nbsp;They have simply two fields, an unsigned 32 bit integer that is it&#39;s ID <code>Number</code>, and a byte array that is the contained <code>Data</code>. &nbsp;Typically the <code>Data</code> in the <code>Block</code> is compressed. &nbsp;The code for this class is in the next part.</p>
+
+<p>&nbsp;</p>
+
+<h2>Packet Types</h2>
+
+<p>These are used to tell our app what each datagram is supposed to mean, they are:</p>
+
+<ul>
+	<li><code>ACK&nbsp;</code> - An acknowledgement. Mostly for control messages, sent by both sides.</li>
+	<li><code>BYE&nbsp;</code> - An &quot;end transfer,&quot; message. <strong>Can be sent by either the Sender or Receiver at any time.</strong></li>
+	<li><code>REQF</code> - A request for a file. &nbsp;Sent&nbsp;by the Receiver to the Sender. &nbsp;Needs to be <code>ACK</code>&#39;d by the Sender.</li>
+	<li><code>INFO</code> - Information regarding a transferable file. &nbsp;Sent by the Sender to the Receiver after the <code>REQF</code>. &nbsp;Needs to be <code>ACK</code>&#39;d by the Receiver.</li>
+	<li><code>REQB</code> - A request for a <code>Block</code> of data. &nbsp;Sent by the Receiver to the Sender after the <code>INFO</code>.</li>
+	<li><code>SEND</code> - A response to a <code>Block</code> request, containing Block data. &nbsp;Sent by the Sender to the Receiver of a corresponding <code>REQB</code>.</li>
+</ul>
+
+<p>Here is a helpful diagram that explains how the exchanges work:</p>
+
+<h1 style="text-align:center"><span style="background-color:#FFFF00">TODO Diagram</span></h1>
+
+<p>&nbsp;</p>
+
+<h2>Packet Data (Payloads)</h2>
+
+<p>Here&#39;s the data that some exchanges should contain.</p>
+
+<ul>
+	<li><code>REQF</code> - <code>Payload</code> should contain a UTF8 encoded string that is the desired file.
+
+	<ul>
+		<li>An <code>ACK</code> must always be sent by the Sender. &nbsp;If the file is present, it should contain the same <code>Payload</code> that was in the <code>REQF</code>, if not, then it should send an empty <code>Payload</code>.</li>
+	</ul>
+	</li>
+	<li><code>INFO</code> - First 16 bytes of the <code>Payload</code> must be a MD5 checksum of the original file (uncompressed). &nbsp;The next 4 bytes are a <code>UInt32</code> of the file size (in bytes). &nbsp;The 4 bytes after that is the maximum <code>Block</code> size (in bytes), &nbsp;The last 4 bytes are the total number of <code>Block</code>s that will be transferred.
+	<ul>
+		<li>An <code>ACK</code> must be sent by the Receiver. &nbsp;It should have an empty <code>Payload</code>.</li>
+	</ul>
+	</li>
+	<li><code>REQB</code> - <code>Payload</code> is an <code>UInt32</code> number that is the <code>Block.Number</code> that is being requested by the Receiver.</li>
+	<li><code>SEND</code> - <code>Payload</code> is a <code>Block</code> who&#39;s Number is that of one requested in a previous <code>REQB</code>.</li>
+	<li><code>BYE&nbsp;</code> - No <code>Payload</code> is needed.</li>
+</ul>
+
+<p>&nbsp;If you are confused, take a look at the diagram as it has some examples:</p>
+
+<h1 style="text-align:center"><span style="background-color:#FFFF00">TODO Diagram</span></h1>

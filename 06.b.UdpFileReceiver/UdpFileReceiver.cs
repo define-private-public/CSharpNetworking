@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Filename:  UdpFileReceiver.cs        
+// Author:    Benjamin N. Summerton <define-private-public>        
+// License:   Unlicense (http://unlicense.org/)      
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -209,7 +213,7 @@ namespace UdpFileTransfer
                         {
                             for (UInt32 id = 1; id <= numBlocks; id++)
                             {
-                                if (!_blocksReceived.ContainsKey(id))
+                                if (!_blocksReceived.ContainsKey(id) && !_blockRequestQueue.Contains(id))
                                 {
                                     _blockRequestQueue.Enqueue(id);
                                     totalRequestedBlocks++;
@@ -369,7 +373,7 @@ namespace UdpFileTransfer
         {
             // setup the receiver
             string hostname = "localhost";//args[0].Trim();
-            int port = 6000;//args[1].Trim();
+            int port = 6000;//int.Parse(args[1].Trim());
             string filename = "short_message.txt";//args[2].Trim();
             fileReceiver = new UdpFileReceiver(hostname, port);
 

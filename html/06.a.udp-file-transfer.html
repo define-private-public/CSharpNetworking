@@ -1,0 +1,21 @@
+<h1>UDP File Transfer</h1>
+
+<p>UDP is very different from TCP. &nbsp;We have to work with datagrams instead of streams &amp; connections. &nbsp;It can be very fast (and unreliable), but there are many things that we have to do ourselves. &nbsp;Trying to think of a good (and interesting&nbsp;example), I decided upon building a simple file transfer application (over UDP) would be a nice place to start.</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box tangent">
+<p>On <a href="https://www.reddit.com/r/programming">/r/programming</a>&nbsp;there was an interesting article about a new web protocol that Google is working on called QUIC. &nbsp;The tl;dr is that it&#39;s meant to replace TCP usage in some protocols, thus giving some speed improvements. &nbsp;<a href="https://ma.ttias.be/googles-quic-protocol-moving-web-tcp-udp/">Read the article&nbsp;here.</a></p>
+</div>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Before Starting</h2>
+
+<p>This program will be separated into two parts. &nbsp;The <strong>Sender</strong> and the <strong>Receiver</strong>. &nbsp;The Sender will act as the server (of sorts) that will transfer the files to the Receivers.</p>
+
+<p>The code is going to cover <strong>synchronous</strong>, <strong>singled threaded</strong> usage of the <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient(v=vs.110).aspx"><code>UdpClient</code></a> class. &nbsp;<span style="color:#FF0000">Friendly reminder that this is <strong>not</strong> a tutorial about UDP, but just how to use the APIs in C#. </span>&nbsp;I&#39;d recommend making a Google search or checking YouTube for some other resources that can explain UDP better on a theory level. <span style="color:#FF0000">&nbsp;</span>The code is a lot more complex than I originally anticipated;&nbsp;but just as always, don&#39;t get discouraged.</p>

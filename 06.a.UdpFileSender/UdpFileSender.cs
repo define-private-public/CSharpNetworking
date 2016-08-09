@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Filename:  UdpFileSender.cs        
+// Author:    Benjamin N. Summerton <define-private-public>        
+// License:   Unlicense (http://unlicense.org/)      
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -331,7 +335,7 @@ namespace UdpFileTransfer
         {
             // Setup the sender
             string filesDirectory = "Files";//args[0].Trim();
-            int port = 6000;//args[1].Trim();
+            int port = 6000;//int.Parse(args[1].Trim());
             fileSender = new UdpFileSender(filesDirectory, port);
 
             // Add the Ctrl-C handler
