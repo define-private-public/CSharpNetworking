@@ -1,0 +1,46 @@
+<h1>UDP File Transfer - Common Files</h1>
+
+<p>This UDP example is split into two projects, but they share some common code. &nbsp;Feel free to just paste these in (I do recommend typing them in, but it can get lengthy), though make sure you read the summaries at the bottom of each.</p>
+
+<p>&nbsp;</p>
+
+<h2>Block</h2>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/e75db7dfd50fe5415786e7141f8398b9.js?file=Block.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>This is a little data container that&#39;s used to chop up a larger file into smaller chunks. &nbsp;We have two constructors. &nbsp;One for creating a new one with a set <code>Number</code>, and the other for reconstructing it from a byte array. &nbsp;The <code>GetBytes()</code> method is used to well, get the <code>Block</code> as a byte array.</p>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Packet</h2>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/e75db7dfd50fe5415786e7141f8398b9.js?file=Packet.cs"></script>
+
+<p>&nbsp;</p>
+
+<p><code>Packet</code> is what we&#39;re bouncing around the inter-networks. &nbsp;It has&nbsp;two only data fields,&nbsp;<code>PacketType</code>&nbsp;and <code>Payload</code>. &nbsp;All <code>Packet</code>s should have one of the types listed at the top under the region &quot;Message Types.&quot; &nbsp;Like with <code>Block</code>, there is also a second constructor to create a <code>Packet</code> from a byte array, and a <code>GetBytes()</code> method to get a <code>Packet</code> as a byte array.</p>
+
+<p>At the bottom there are &quot;specific packets,&quot; which are there to make working with <code>Payload</code> data easier with some message types. &nbsp;You&#39;ll notice there isn&#39;t one for <code>BYE</code> as it doesn&#39;t need any <code>Payload</code>.</p>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>NetworkMessage</h2>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/e75db7dfd50fe5415786e7141f8398b9.js?file=NetworkMessage.cs"></script>
+
+<p>&nbsp;</p>
+
+<p><code>NetworkMessage</code> is a tiny data structure that used to pair a <code>Packet</code> with a <code>Sender</code>.&nbsp; &nbsp;These are only used when reading data we&#39;ve received.</p>

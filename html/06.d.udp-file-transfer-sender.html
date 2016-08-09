@@ -1,0 +1,34 @@
+<h1>UDP File Transfer - Sender</h1>
+
+<p>Here is what will wait for file requests and respond to them. &nbsp;This acts as a server of sorts. &nbsp;Note that in&nbsp;<code>Main()</code> you can comment out the hard coded arguments and used command line args instead.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/e75db7dfd50fe5415786e7141f8398b9.js?file=UdpFileSender.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>So there is quite some code here, let&#39;s break it down.</p>
+
+<p>In the constructor for <code>UdpFileSender</code>, we tell it what directory we want to use for files that are able to be transferred and we create the <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient(v=vs.110).aspx"><code>UdpClient</code></a>. &nbsp;We create it to listen for incoming datagrams on a specific port, and only IPv4 connections.</p>
+
+<p>&nbsp;</p>
+
+<p><code>Init()</code> will scan the <code>FilesDirectory</code> (non-recursively) for any files and mark them as transferable. &nbsp;It also sets&nbsp;<code>Running</code> to <code>true</code> so we can start listening for Receivers. &nbsp;<code>Shutdown()</code> is used to simply shut down the &quot;server.&quot;</p>
+
+<p><code>Run()</code> is the main meat of <code>UdpFileSender</code>. &nbsp;At the top we have some variables that are used for the transfer state as well as a mini-helper function to reset the state in case we have to. &nbsp;In the beginning of the loop we see if we have any new Packets that were sent to us. &nbsp;If one was a <code>BYE</code> message, it means the client has prematurely disconnected and we should reset the transfer state to wait for a new client. &nbsp;The switch statement is used to run through the transfer process. &nbsp;Each state will wait for a certain type of <code>Packet</code>, do some processing (e.g. creating a response or preparing a file for transfer) then move to the next one in line. &nbsp;I won&#39;t go into the gory details as it&#39;s pretty easy to read (IMO). &nbsp;At the bottom of the while loop we take a short nap to save on CPU resources. &nbsp;And at the end of the function we send a <code>BYE</code> message to a client if we have one currently &quot;connected,&quot; (in case the Sender operator wanted to shut down in the middle of a transfer).</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box info">
+<p>Talking about the <code>Send</code> method of <code>UdpClient</code>, we are using the <a href="https://msdn.microsoft.com/en-us/library/82dxxas0(v=vs.110).aspx">overload that requires you list and endpoint</a>. &nbsp;If you application&nbsp;<em>may</em>&nbsp;connect&nbsp;with multiple clients, I recommend using this method over the other ones. &nbsp;Reminder that UDP is connectionless, therefore we don&#39;t have an established connection with any client. &nbsp;Please ignore that <code>Connection</code> method you might have seen&nbsp;for now...</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>And <code>Close()</code> will clean up the underlying <code>UdpClient</code>;&nbsp;&#39;nuff&nbsp;said.</p>
+
+<p><code>_checkForNetworkMessages()</code> will see if we have any new datagrams that have ben received. &nbsp;Since all of our Packets are at least four bytes in length, we want to make sure that many bytes are ready. &nbsp;We create a dummy <code>IPEndPoint</code> object. &nbsp;Using <code>UdpClient.Receive</code>, it will grab <strong>exactly one</strong> datagram that has been received by the network. &nbsp;Unlike <code>TcpClient</code>, we don&#39;t have to mess around with <code>NetworkStream</code>s. &nbsp;After we have it, we shove its sender and the <code>Packet</code> into a <code>NetworkMessage</code> queue for later processing.</p>
+
+<p><code>_prepareFile()</code> will do what the name implies and makes a file ready for transfer. &nbsp;It takes in a filepath, computes a checksum of the original bytes, compresses it, and chops it into <code>Block</code>s. &nbsp;If all went well, it will return <code>true</code>, and its <code>out</code> parameters will be populated. <span style="color:#FF0000">&nbsp;If you missed my last tutorial on Compression in C# be sure to read it</span>, <a href="http://16bpp.net/tutorials/csharp-networking/05">find it over here</a>.</p>
+
+<p>That&#39;s really all there is to <code>UdpFileSender</code>. &nbsp;If you glossed over the switch statement in <code>Run()</code> that handles the state of the file transfer process, I recommend you read it well.</p>
