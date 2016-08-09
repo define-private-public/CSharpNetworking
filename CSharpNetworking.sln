@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04.e.TcpGamesClient", "04.e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "05.Compression", "05.Compression\05.Compression.csproj", "{C5C9ED58-7910-44E8-991A-BB9AB6F1E4E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.b.UdpFileReceiver", "06.b.UdpFileReceiver\06.b.UdpFileReceiver.csproj", "{14B9BA4C-7F03-454D-A0E2-F7380328C99C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "06.a.UdpFileSender", "06.a.UdpFileSender\06.a.UdpFileSender.csproj", "{E28D759D-2DE2-408D-89C3-70F4D00101C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -33,6 +37,10 @@ Global
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Debug|x86.Build.0 = Debug|x86
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Release|x86.ActiveCfg = Release|x86
 		{0D539553-B757-42E9-A9AC-8B9E46F199A0}.Release|x86.Build.0 = Release|x86
+		{14B9BA4C-7F03-454D-A0E2-F7380328C99C}.Debug|x86.ActiveCfg = Debug|x86
+		{14B9BA4C-7F03-454D-A0E2-F7380328C99C}.Debug|x86.Build.0 = Debug|x86
+		{14B9BA4C-7F03-454D-A0E2-F7380328C99C}.Release|x86.ActiveCfg = Release|x86
+		{14B9BA4C-7F03-454D-A0E2-F7380328C99C}.Release|x86.Build.0 = Release|x86
 		{1E048B96-6C04-45DB-BD77-13B7021782FB}.Debug|x86.ActiveCfg = Debug|x86
 		{1E048B96-6C04-45DB-BD77-13B7021782FB}.Debug|x86.Build.0 = Debug|x86
 		{1E048B96-6C04-45DB-BD77-13B7021782FB}.Release|x86.ActiveCfg = Release|x86
@@ -65,6 +73,10 @@ Global
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Debug|x86.Build.0 = Debug|x86
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Release|x86.ActiveCfg = Release|x86
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Release|x86.Build.0 = Release|x86
+		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Debug|x86.ActiveCfg = Debug|x86
+		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Debug|x86.Build.0 = Debug|x86
+		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Release|x86.ActiveCfg = Release|x86
+		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Release|x86.Build.0 = Release|x86
 		{EEF79935-9D21-4F81-9095-3B93411C5472}.Debug|x86.ActiveCfg = Debug|x86
 		{EEF79935-9D21-4F81-9095-3B93411C5472}.Debug|x86.Build.0 = Debug|x86
 		{EEF79935-9D21-4F81-9095-3B93411C5472}.Release|x86.ActiveCfg = Release|x86
