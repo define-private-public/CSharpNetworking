@@ -286,7 +286,7 @@ namespace UdpFileTransfer
             if (!_running)
                 return;
 
-            // Check that there is something available (and at least four bytes for type and length)
+            // Check that there is something available (and at least four bytes for type)
             int bytesAvailable = _client.Available;
             if (bytesAvailable >= 4)
             {
