@@ -1,1 +1,28 @@
 <h1>UDP File Transfer - Receiver</h1>
+
+<p>This is what requests a file from a Sender and downloads it to a local machine. &nbsp;Just like with the other program you can twiddle with some of the hard coded arguments and replace them with command line ones in the <code>Main()</code> function at the bottom.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/e75db7dfd50fe5415786e7141f8398b9.js?file=UdpFileReceiver.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>Like with the Sender, in our constructor&nbsp;we create our <code>UdpClient</code> with a default remote host set (which should be that of the Sender).</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box info">
+<p>I mentioned in the last part that there is a <code>Connect</code> method in <code>UdpClient</code> (<a href="https://msdn.microsoft.com/en-us/library/c4w4cta7(v=vs.110).aspx">doc link</a>). &nbsp;Please note that this is a dirty filthy lie as UDP is a connectionless protocol. &nbsp;In reality, what it does is set a &quot;default remote host,&quot; for you so every time that you call <a href="https://msdn.microsoft.com/en-us/library/08h8s12k(v=vs.110).aspx">this overload</a> of the <code>Send</code> method you don&#39;t need to specify where you want to go, as it will only go to that one host. &nbsp;This also applies to some of the constructors for <code>UdpClient</code> (like the one we&#39;re using).</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p><code>Shutdown()</code> in this class will just request a cancel of an existing file transfer, you can see later in the <code>GetFile()</code> method how this works.</p>
+
+<p><code>GetFile()</code> is the most important function of the class and its very similarly structured to <code>UdpFileSender.Run()</code>. &nbsp;It&#39;s what does all of the communication with the Sender. &nbsp;Let&#39;s break it down. &nbsp;Up at the top of the function&#39;s body there are some variables for the file transfer state and a helper function to reset them if needed. &nbsp;In the beginning of the <code>while</code> loop&nbsp;we check for any new <code>NetworkMessage</code>s. &nbsp;First checking if the latest received <code>Packet</code> is a&nbsp;<code>BYE</code>, it then passes that onto the <code>switch</code> statement. &nbsp;Inside of the <code>switch</code> is what manages the state of the file transfer (<code>REQF</code>, wait for <code>ACK</code>, wait for <code>INFO</code>, <code>ACK</code>, etc...). &nbsp;Inside of the&nbsp;<code>ReceiverState.Transfering</code> <code>case</code> it will empty the <code>Block</code> request queue, check for any <code>SEND</code> messages (i.e. <code>Block</code> data). &nbsp;If the request queue is empty but we don&#39;t have all the <code>Block</code>s, it will refill the request queue with the missing <code>Block.Number</code> values. &nbsp;But if we have all of the <code>Block</code>s, then we move onto the state where we say <code>BYE</code> to the Sender (so it can accept new transfers) and then we reconstruct the <code>Block</code>s into a byte array, uncompress them, and save the file. &nbsp;At the end of the function we make a check to see if the transfer was ended prematurely by user request or the Sender.</p>
+
+<p><code>Close()</code> will clean up the underlying network resources, which is just the <code>UdpClient</code>.</p>
+
+<p><code>_checkForNetworkMessages()</code> is identical to the one seen in Sender. &nbsp;It sees if there are enough bytes for a <code>Packet</code> message then queues it up for processing.</p>
+
+<p><code>_saveBlocksToFile()</code> is where we take the <code>Block</code>s, reassemble them, uncompress the data, verify it with a checksum and then save it to the disk.</p>

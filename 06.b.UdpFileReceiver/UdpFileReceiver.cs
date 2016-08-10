@@ -272,7 +272,8 @@ namespace UdpFileTransfer
             if (senderQuit && wasRunning)
                 Console.WriteLine("The sender quit on us, canceling the transfer.");
 
-            ResetTransferState();   // This also cleans up collections
+            ResetTransferState();           // This also cleans up collections
+            _shutdownRequested = false;     // In case we shut down one download, but want to start a new one
         }
 
         public void Close()

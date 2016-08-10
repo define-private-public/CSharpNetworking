@@ -1,0 +1,31 @@
+<h1>UDP File Transfer - Recap</h1>
+
+<p>Here&#39;s a screenshot of it in action using a tinier version of my test file of choice. &nbsp;Using SFTP took around a 14 seconds to transfer the video, whereas it took about 9 using the application we built. &nbsp;There are many reasons SFTP was slower in this case, but I&#39;ll leave that to you to figure out.</p>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/udp_file_transfer.png"><img alt="UDP File Transfer Screenshot" height="854" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/udp_file_transfer.png" width="1600" /></a></p>
+
+<h2 style="text-align:center"><span style="background-color:#FFFF00">TODO: add comment on image in Krita</span></h2>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>With every other project&nbsp;that we&#39;ve made so far, there are some deficiencies and improvements we could make. &nbsp;Let&#39;s analyze a few of them:</p>
+
+<ul>
+	<li>This program can sure take up a lot of heap memory. &nbsp;When I was testing it with a larger file I had some <code>OutOfMemoryException</code>s thrown at me. &nbsp;What we should be doing instead is saving the <code>Block</code>s to the disk (instead of storing them in memory) as we send and receive them.</li>
+	<li>The Sender needs some better client management. &nbsp;Say if a second (malicious) client were to connect and send a <code>BYE</code> message in the middle of a transfer,&nbsp;it would stop the transfer with the first. &nbsp;The first Receiver wouldn&#39;t even know what&#39;s going on, it would just keep queuing up block requests.&nbsp; The Sender really should ignore any datagrams from other clients when its in the middle of a transfer with one.</li>
+	<li><u><em><span style="color:#FF0000"><strong>Timeouts &amp; Retries</strong></span></em></u>. &nbsp;This one is so important I&#39;m putting in bold, underlined, italicized and red text. &nbsp;Our code is completely void of any timeouts and retries (except for Block requeueing). &nbsp;When one of the apps is waiting for an <code>ACK</code>, it should wait for a set amount of time and then resend its <code>Packet</code>&nbsp;in case the original one was dropped. &nbsp;In the real world (and future applications) we need to be adding in our own retries and timeouts for the control <code>Packet</code>s. (<code>REQF</code>, <code>INFO</code>, <code>ACK</code>, etc...).
+	<ul>
+		<li>In fact the <code>Block</code> requeueing method is pretty bad. &nbsp;It should wait for a set amount of time first before making another request for a block. &nbsp;When I first tested this over the internet, my Receiver created many <code>REQB</code>s before the Sender could even respond to the first one it got.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;Keep in mind that this is supposed to be a sample application showcasing UDP (and not a real world one). &nbsp;If you were to add in UDP based file transfer to any application you are building, you would really need to make these changes.</p>
+
+<p>As always, if you spot any other issues, be sure to <a href="https://16bpp.net/page/contact">send me an email</a> and I&#39;ll evaluate them. &nbsp;Anything is appreciated.</p>
