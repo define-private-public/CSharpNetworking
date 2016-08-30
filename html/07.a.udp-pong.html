@@ -1,0 +1,25 @@
+<h1>UDP Pong</h1>
+
+<p>We&#39;re going to something a little bit more fun for this section. &nbsp;We&#39;re going to write a clone of Pong that we can play over the network. &nbsp;There will be a central server that many players can connect to play one on one matches. &nbsp;Pong really is the &quot;Hello, World!&quot; of video game programming, so I think it would be a good first game to try to network.</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box package">
+<p>Since we&#39;re doing video game programming I chose to use <a href="http://www.monogame.net/">MonoGame </a>as our media library. &nbsp;It&#39;s cross platform, uses C#, and pretty easy to use.&nbsp; I wanted to keep as much of this tutorials series in the command line, but I had to break that guideline here. &nbsp;I used the <a href="https://www.nuget.org/packages/MonoGame.Framework.DesktopGL/"><code>MonoGame.Framework.DesktopGL</code></a> package. &nbsp;If you&#39;re on another OS than Linux, you might want to try Windows or MacOS versions.</p>
+
+<p><span style="color:#FF0000"><strong>Note:&nbsp;</strong></span>Audio playback is umm... kind of broken with MonoGame 3.5 (the current stable&nbsp;release at the time of writing this). &nbsp;As far as I know, this only applies to the DesktopGL package. &nbsp;This is really an un-fun problem because I&#39;ve got projects that use an older version of MonoGame that still plays sounds fine; If you&#39;re on a Linux system you might want to try getting a slightly older version if you really want to play sounds.</p>
+
+<p>I&#39;ve included a <code>#define</code>&nbsp;that allows you to toggle audio playback on the Client app at compile time. &nbsp;It&#39;s disabled by default.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><span style="background-color:#FFFF00">TODO buster nuget lies</span></p>
+
+<p>&nbsp;</p>
+
+<h2>Architecture Overview</h2>
+
+<p>This tutorial is going to be broken up into two applications, the <code>PongServer</code> and the <code>PongClient</code> (make two separate Projects in your Solution). &nbsp;The server is going to be authoritative in handling collisions (Ball with Paddles, Goals, and top/bottom), notifying the client to play music, and position updates. &nbsp;All the client will need to do connect to the server and tell it&#39;s Paddle&#39;s Y position.</p>
+
+<p>In a game instance (referred to as an <code>Arena</code> in the Server code), there will be only two players maximum, though the server should be able to handle multiple games at the same time. &nbsp;A game instance will not start unless two Clients have connected.&nbsp; If a Client connects and then disconnects, the game instance is considered done, regardless if the match had started or not.</p>
