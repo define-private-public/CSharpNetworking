@@ -2,14 +2,14 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="06.b.UdpFileReceiver/UdpFileReceiver.cs">
     <Files>
       <File FileName="06.a.UdpFileSender/UdpFileSender.cs" Line="1" Column="1" />
-      <File FileName="06.b.UdpFileReceiver/UdpFileReceiver.cs" Line="275" Column="36" />
+      <File FileName="06.b.UdpFileReceiver/UdpFileReceiver.cs" Line="276" Column="88" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.ItemProperties.03.b.TcpChatServer PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.ItemProperties.03.b.TcpChatServer PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>
