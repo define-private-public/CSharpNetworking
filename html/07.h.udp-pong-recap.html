@@ -13,9 +13,18 @@
 	<li>Should the <code>Arena</code> code manage the connection with the clients? &nbsp;I don&#39;t think it should in retrospect. &nbsp;That should more be a responsibility of the <code>PongServer</code>. &nbsp;This includes setting up the connection, handling <code>Heartbeat</code>s, and disconnects. &nbsp;All the <code>Arena</code> should do is manage the game data and make communication requests.</li>
 	<li>I&#39;m wondering if the <code>HeartbeatAck</code> was&nbsp;a good idea since it requires the Server to respond to a <code>Heartbeat</code>. &nbsp;If the Client sends one, but it drops during transmission, there will be no Ack created. &nbsp;And even if the <code>Heartbeat</code> reaches the server, what&#39;s there to guarantee that the Ack will reach back to the Client? &nbsp;Nothing really.<br />
 	<br />
-	When I was testing this earlier with a friend somewhere else in the USA, I had the <code>Heartbeat</code>s send once every second, and it would time out if for 15 seconds no <code>Hearbeat</code> (or Ack) was recorded. &nbsp;It would usually time out after a few minutes (we were both on crappy connections). &nbsp;This means that 15 <code>Heartbeat</code>s and their Acks were dropped in a row (not unlikely), which is pretty bad. &nbsp;So in this final version it now sends 5 Heartbeats per second and has a timeout of 20 seconds. &nbsp;This means that it would need to miss 400 consecutive <code>Heartbeat</code>s to time out, which is a lot less likely.<br />
+	When I was testing this earlier with a friend somewhere else in the USA, I had the <code>Heartbeat</code>s send once every second, and it would time out if for 15 seconds no <code>Heartbeat</code> (or Ack) was recorded. &nbsp;It would usually time out after a few minutes (we were both on crappy connections). &nbsp;This means that 15 <code>Heartbeat</code>s and their Acks were dropped in a row (not unlikely), which is pretty bad. &nbsp;So in this final version it now sends 5 Heartbeats per second and has a timeout of 20 seconds. &nbsp;This means that it would need to miss 400 consecutive <code>Heartbeat</code>s to time out, which is a lot less likely.<br />
 	<br />
 	Maybe a better solution would be to have both the Client &amp; Server send <code>Heartbeat</code>s &amp; Acks, or just <code>Heartbeat</code>s only.</li>
 	<li><code>Bye</code> should probably have its own Ack. &nbsp;In the Client code we waited one second to make sure the message was sent. &nbsp;This is a little bad. &nbsp;Maybe instead waiting a second <em>or</em>&nbsp;hearing an Ack first would be a better idea. &nbsp;This also better models a TCP connection termination.</li>
 	<li>Possibly counting an integer instead of a Timestamp might be better for managing <code>Packet</code> order. &nbsp;Time really is meta-data instead of an actual <code>Packet</code> ordering.</li>
+	<li>
+	<div class="question">
+	<p>There&#39;s a bit of a problem with trusting data sent by the Client to the Server. &nbsp;Take a look in the code for <code>PongClient</code> that has to deal with the <code>Paddle</code>.</p>
+
+	<p class="answer-hidden" id="answer1">It&#39;s very possible (and easy) for a player to lie about their Paddle movement. &nbsp;As of right now, the Server doesn&#39;t have any code to verify the Paddle&#39;s movements have been under 100 pixels/sec. &nbsp;It might be a fun exercise for you to make a Client that will match the Ball&#39;s Y position with that of your Paddle&#39;s.</p>
+
+	<p><button onclick="showAnswer('answer1');">Show Answer</button></p>
+	</div>
+	</li>
 </ol>
