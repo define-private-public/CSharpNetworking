@@ -34,7 +34,7 @@
 
 <p>This is our version of the <a href="http://www.omnisecu.com/tcpip/tcp-three-way-handshake.php">TCP Three-Way Handshake</a>. &nbsp;The Client will send a <code>RequestJoin</code> to the Server. &nbsp;The Server will respond with an&nbsp;<code>AcceptJoin</code>&nbsp;message; it&nbsp;is the only one that contains data (an unsigned 32 bit integer that denotes the Client&#39;s <code>Paddle</code>). &nbsp;Then the Client will need to respond with the <code>AcceptJoinAck</code>.&nbsp;&nbsp;Here is a diagram of the handshake:</p>
 
-<p style="text-align:center"><strong><span style="background-color:#FFFF00">TODO Handshake diagram</span></strong></p>
+<p style="text-align:center"><a href="https://storage.googleapis.com/sixteenbpp/tutorials/images/udp-pong-handshake.png"><img alt="UDP Pong Handshake" height="656" src="https://storage.googleapis.com/sixteenbpp/tutorials/images/udp-pong-handshake.png" width="1000" /></a></p>
 
 <p>&nbsp;</p>
 
@@ -54,7 +54,7 @@
 
 <p>A few times per second both the Clients and the Server will send each other info about their current state. &nbsp;The Client only needs to send <code>PaddlePosition</code> <code>Packet</code>s; it contains one&nbsp;floating point number that is the <code>Paddle</code>&#39;s Y position. &nbsp;The Server will send a <code>GameState</code> <code>Packet</code> to both Clients. &nbsp;It will contain the <code>Paddle</code> &amp; <code>Ball</code> positions as well as the scores (see the diagram below for the data layout). &nbsp;Periodically the Server will send a <code>PlaySoundEffect</code> message. &nbsp;This will tell the Client it should play a sound effect. &nbsp;The name of the sound effect is encoded as a UTF-8 string.</p>
 
-<p style="text-align:center"><strong><span style="background-color:#FFFF00">TODO Packet Data diagrams</span></strong></p>
+<p>Check the code for <code>Packet.cs</code> for details, specifically the classes <code>GameStatePacket</code>, <code>PaddlePositionPacket</code>, and <code>PlaySoundEffect</code>. &nbsp;They will show you how the data is laid out.</p>
 
 <p>&nbsp;</p>
 
