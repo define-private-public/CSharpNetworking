@@ -1,0 +1,70 @@
+<h1>UDP Pong - Common Files</h1>
+
+<p>Add all of these files to both the Client Project and the Server Project. &nbsp;If you want to copy &amp; paste all of <code>Packet.cs</code>, I don&#39;t blame you (it&#39;s very long, boring and repetitive), but be sure to pay attention to the <code>Packet</code>&nbsp;class and it&#39;s&nbsp;subclasses that have <code>Payload</code> data.</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box info">
+<p>The proper thing to do would be to create a separate Project in the Solution that contains the common code (e.g. <code>PongFramework</code>), but what I do instead is put all of the common files in one of the Projects (e.g. <code>PongServer</code>), and then add those as linked files in the other Project (e.g. <code>PongClient</code>). &nbsp;That way everything is nice and synced.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>GameGeometry</h2>
+
+<p>This is only a static data containment class. &nbsp;Instead of littering our program with hard coded values, it&#39;s better to put there here.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=GameGeometry.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>NetworkMessage</h2>
+
+<p>This is almost identical to the one in the File Transfer example, but this also adds field where we mark the time when one side has received the <code>Packet</code>.&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=NetworkMessage.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>ThreadSafe</h2>
+
+<p>This makes one variable (of a generic type) thread safe (via locking). &nbsp;It can only be accessed via the <code>Value</code> property.</p>
+
+<p>&nbsp;</p>
+
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=ThreadSafe.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>Packet</h2>
+
+<p>All right, this is the big one. &nbsp;It&#39;s quite similar to the one of the File Transfer example, except that is has an extra field denoting the time the <code>Packet</code> was created. &nbsp;There are many subclasses that have specific implementations of the <code>PacketType</code> enumeration. &nbsp;Like last time, you use the <code>GetBytes()</code> method to get the Packet data as byte array that can be sent over the network. &nbsp;The only subclasses that have Payloads are <code>AcceptJoinPacket</code>, PaddlePositionPacket, GameStatePacket, and PlaySoundEffectPacket. &nbsp;Be sure to pay attention to how those ones store data. &nbsp;Feel free to Ctrl-C, Ctrl-V the rest of the code if you find it too much to type.</p>
+
+<p>&nbsp;</p>
+
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=Packet.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>Ball</h2>
+
+<p>This is the game object for the Ball that will be bounced around. <code>&nbsp;LoadContent()</code> and <code>Draw()</code> should only be called on the Client app. &nbsp;Where as<code>Initialize()</code> and <code>ServerSideUpdate()</code> will be called on the Server.</p>
+
+<p>&nbsp;</p>
+
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=Ball.cs"></script>
+
+<p>&nbsp;</p>
+
+<h2>Paddle</h2>
+
+<p>There are two enumerations at the top of this file. &nbsp;The first determines what side of the board the <code>Paddle</code> is one (using None will cause an error). &nbsp;The other is to mark what kind of collision has happened with the <code>Paddle</code>. <code>&nbsp;LoadContent()</code>, <code>Draw()</code>, and <code>ClientSideUpdate()</code> are called only on the Client. &nbsp;That last function is what checks to see if the user has tried to&nbsp;move the Paddle (it also does a bit of bounds checking). <code>&nbsp;Initialize()</code> and <code>Collides()</code> only need to be called on the Server portion.</p>
+
+<p>The function <code>Collides()</code> is what checks if the Ball has collided with the <code>Paddle</code>. &nbsp;If it has, the function will return true and the out parameter<code>typeOfCollision</code> will be filled with a value from the <code>PaddleCollision</code> enumeration.</p>
+
+<p>&nbsp;</p>
+
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=Paddle.cs"></script>

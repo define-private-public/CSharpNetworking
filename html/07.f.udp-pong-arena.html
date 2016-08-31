@@ -1,0 +1,38 @@
+<h1>UDP Pong - Arena</h1>
+
+<p>This is where the Pong game logic lives on the Server.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=Arena.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>At the top of the class we have our member variables. &nbsp;<code>State </code>needs to be encased in a <code>ThreadSafe</code> since it will be accessed by multiple threads. &nbsp;The <code>Paddle</code> objects are contained for us in the <code>PlayerInfo</code> classes. &nbsp;We store a reference to the running Server instance. &nbsp;We also have our own message queue for <code>Packet</code>s that have been dispatched to us.</p>
+
+<p><code>TryAddPlayer()</code> is called when we get a new Client connecting to the Server. &nbsp;It will only add two players to this <code>Arena</code>. &nbsp;The function will return <code>true</code> if the Client was added successfully, in any other case it will return <code>false</code>.</p>
+
+<p><code>Start()</code> will shift the <code>State</code> of the <code>Arena</code> to where it can accept new players and will begin running the underlying&nbsp;<code>_arenaThread</code> which runs the <code>_arenaRun()</code> method.</p>
+
+<p><code>_arenaRun()</code> is the heart of this class. &nbsp;It is another looping function. &nbsp;In the beginning of the loop it will check for new <code>NetworkMessage</code>s and will make decisions based upon it&#39;s current <code>State</code>. &nbsp;While we are waiting for two players, it will try to handle a connection setup. &nbsp;Once two players have connected it will send them the <code>GameStart</code> <code>Packet</code>s. &nbsp;Once the <code>GameStart</code> <code>Packet</code>s have been Ack&#39;d by the Clients it will then shift the <code>State</code> to <code>InGame</code>,&nbsp;start the <code>_gameTimer</code>, and begin processing/handling <code>PaddlePosition</code> &amp; <code>GameState</code> <code>Packet</code>s. &nbsp;In case a <code>Bye</code> message has been sent by one of the clients it will then stop the loop and notify the other Client the match is over. &nbsp;At the end of the loop it will check for player time outs or see if a stop has been requested by the Server. &nbsp;Once the loop has been exited it will queue up a <code>ByePacket</code> to any connected clients and notify the Server the game is done.</p>
+
+<p><code>JoinThread()</code> will give the underlying <code>_arenaThread</code> 1/10 of a second to complete execution.</p>
+
+<p><code>EnqueMessage()</code> is called by the <code>PongServer</code> to tell the <code>Arena</code> it&#39;s gotten something from one of it&#39;s Clients.</p>
+
+<p><code>_sendTo()</code> sets a <code>Packet</code> to be sent to a <code>Client</code>. &nbsp;It will record the time when&nbsp;we wanted to send it.</p>
+
+<p><code>_timedOut()</code> is used to check the last time we&#39;ve received a <code>Packet</code> from them versus how long a timeout should be (20 seconds in our case)</p>
+
+<p><code>_handleConnection()</code> is what instantiates the connection between the Client and the Server (though it&#39;s stored in the <code>Arena</code> code). &nbsp;It will assign a <code>Paddle</code> to a Client and respond to <code>Heartbeat</code> messages.</p>
+
+<p><code>_sendAcceptJoin()</code> is a small helper method to tell a Client which <code>Paddle</code> they are.</p>
+
+<p><code>_notifyGameStart()</code> will tell a Client a game has started, and will retry every time the timeout has been reached.</p>
+
+<p><code>_sendGameState()</code> will tell a Client about the current state of the match. &nbsp;This is the <code>Paddle</code> positions, scores, and <code>Ball</code> position.</p>
+
+<p><code>_playSoundEffect()</code> will queue up a <code>PlaySoundEffectPacket</code> to a Client.</p>
+
+<p><code>_handlePaddleUpdate()</code> will look at a <code>PaddlePosition</code> message from a Client and update it&#39;s <code>Paddle</code>&#39;s Y position.</p>
+
+<p>The next two methods are for collisions. <code>&nbsp;_checkForBallCollision()</code> will do all the math to see what the <code>Ball</code> is hitting something, and take an appropriate action (bounce, score, sound, etc.). &nbsp;<code>_processBallHitWithPaddle()</code> is used to alter the <code>Ball&#39;s</code> velocity for <code>Ball</code>-<code>Paddle</code> collisions.</p>

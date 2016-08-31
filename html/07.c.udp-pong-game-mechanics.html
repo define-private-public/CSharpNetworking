@@ -1,0 +1,29 @@
+<h1>UDP Pong - Game Mechanics</h1>
+
+<p>As stated before, Pong really is the &quot;Hello, World!&quot; of game development. &nbsp;I&#39;m pretty sure that most of you have done it at some point, but I chose to handle it <em>slightly </em>differently, so I think it&#39;s fair to go over what needs to happen.</p>
+
+<p>&nbsp;</p>
+
+<h2>Scoring</h2>
+
+<p>If the <code>Ball</code> hits the left side of the screen, it&#39;s a score for the right side player. &nbsp;And vice-versa if the <code>Ball</code> touches the right side. &nbsp;The Ball should then reset to the center of the screen. &nbsp;A &quot;score,&quot; noise should also be played.</p>
+
+<p>&nbsp;</p>
+
+<h2>Key Presses</h2>
+
+<p>This only applies to the Client application. &nbsp;If a user presses the <code>Esc</code> key at any time, it will close the application and notify the Server. &nbsp;The Up and Down arrow keys will be used by the user to control the position of the <code>Paddle</code>.</p>
+
+<p>&nbsp;</p>
+
+<h2>Hitting Top &amp; Bottom Bounds</h2>
+
+<p>If the <code>Ball</code> hits the top or the bottom of the screen it should flip the Y component of its velocity. &nbsp;It&#39;s speed will also slightly increase by a random amount and a &quot;ballHit,&quot; sound should be played.</p>
+
+<p>&nbsp;</p>
+
+<h2>Hitting the Paddles</h2>
+
+<p>Each <code>Paddle</code> has three collision areas. &nbsp;One on the top, one on the bottom, and one in the middle (called it&#39;s &quot;Front,&quot;). &nbsp;If the <code>Ball</code> hits any of these its speed will increase slightly and its X direction will be flipped (a sound will also play too). &nbsp;But if the top or the bottom collision areas are hit, it will also flip the Y component of the <code>Ball</code>&#39;s velocity. &nbsp;Below is a diagram of the hitboxes:</p>
+
+<p style="text-align:center"><strong><span style="background-color:#FFFF00">TODO hitbox diagram</span></strong></p>

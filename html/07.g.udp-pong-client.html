@@ -1,0 +1,38 @@
+<h1>UDP Pong - Client</h1>
+
+<p>This is the &quot;fun,&quot; part of the application ecosystem that we will send to our users. &nbsp;Where they can control their very own <code>Paddle</code> that goes up and down. &nbsp;This is also the graphical portion of the app. &nbsp;Before, we were just using the MonoGame/XNA libs for collision detection but here we&#39;re using them for their original intention (video games)!</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box alert">
+<p>Don&#39;t forget, if you want sounds working, you&#39;ll need to uncomment line number 7. &nbsp;Remember that audio isn&#39;t quite working properly with MonoGame 3.5 (DesktopGL version).</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=PongClient.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>You&#39;ve probably noticed a lot of similarities with the <code>Arena</code> and <code>PongServer</code> code already, but there are some differences.</p>
+
+<p>At the top of the class we have our time measurement members. &nbsp;They are exactly similar in meaning to those of <code>PlayerInfo</code>, except that the Server/Client relationship is flip-flopped.</p>
+
+<p>In the constructor we setup our game&#39;s asset directory, the display settings, initialise the game objects and instantiate the <code>UdpClient</code>. &nbsp;For those of you unexperienced with MonoGame/XNA, <code>LoadContent()</code>&nbsp;will load our assets into memory. &nbsp;<code>UnloadContent()</code> will be used to clean up some other things.</p>
+
+<p><code>Update()</code> is another one of those MonoGame/XNA methods. &nbsp;At the top it will check for an <code>Esc</code> key press. &nbsp;If so, it will quit the Client and notify the Server. &nbsp;After that a timeout check is made. &nbsp;Next we check for any new <code>NetworkMessage</code>s and do some stuff based on that. &nbsp;First we check for a <code>Bye</code>. &nbsp;After that we will try to send a <code>JoinRequest</code> if we don&#39;t have a connection. &nbsp;If we&#39;re waiting for a game start, we will ping-pong <code>Heartbeat</code>s with the Server. &nbsp;Once we&#39;re in the game we will continue to send <code>Heartbeat</code>s. &nbsp;We will periodically send our <code>Paddle</code>&#39;s Y position. &nbsp;If we got a <code>GameState</code> we&#39;ll update the rest of the game objects. &nbsp;If a <code>PlaySoundEffect</code> was sent, we will then try to play that named effect.</p>
+
+<p><code>Start()</code> will mark the Client as running and start the underlying <code>_networkThread</code> (with the <code>_networkRun()</code> method).</p>
+
+<p><code>Draw()</code> is once again a MonoGame/XNA method. &nbsp;Depending upon the current state it will either display a message to the user or draw the game objects.</p>
+
+<p><code>_drawCentered()</code> is a utility method to draw a <code>Texture2D</code> object to the center of the screen. &nbsp;<code>_updateWindowTitleWithScore()</code> is another &quot;graphical method&quot; that updates the window&#39;s title with the current score (hence the name). &nbsp;If you notice, it will also denote which side the Client is on.</p>
+
+<p><code>_networkRun()</code> is a looping function that runs in the <code>_networkThread</code>. &nbsp;It reads new messages from the Server and tries to send ones we&#39;ve queued up. &nbsp;After the loop is done, if we&#39;ve set <code>_sendBye</code> to <code>true</code> (via the user pressing <code>Esc</code>) it will send a <code>ByePacket</code>.</p>
+
+<p><code>_sendPacket()</code> will queue up a Packet to be sent and mark the <code>_lastPacketSentTime</code> variable.</p>
+
+<p>I&#39;m not going to spend my time on the last few private methods. &nbsp;They are all related to <code>Packet</code> transfer.&nbsp; You can probably guess what they do based upon their names.</p>
+
+<p>And at the end of the class we have our <code>Main()</code> method which will start the Client and try to connect.</p>

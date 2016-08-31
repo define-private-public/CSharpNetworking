@@ -1,0 +1,64 @@
+<h1>UDP Pong - Server</h1>
+
+<p>Before jumping in, I want to note that none of the game logic lives in <code>PongServer.cs</code>. &nbsp;That code is in <code>Arena.cs</code>. &nbsp;Likewise, if you see a class called <code>Arena</code>, just know that the code for it will be on the next page.</p>
+
+<p>&nbsp;</p>
+
+<h2>PlayerInfo</h2>
+
+<p>This is another data structure but this one only lives on the Server. &nbsp;It contains information about a connected Client and their current state.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=PlayerInfo.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>Those three fields that have to deal with time might look a little confusing, let me explain them a bit better:</p>
+
+<ul>
+	<li><code>LastPacketReceivedTime</code> - This is to denote the time that we received a <code>Packet</code> from a Client. &nbsp;It is taken using a call to&nbsp;<code>DateTime.Now</code>, in the function <code>PongServer._networkRun()</code>. &nbsp;It&#39;s used to check for timeouts.</li>
+	<li><code>LastPacketSentTime</code> - This marks the last time that we&#39;ve sent a <code>Packet</code> to a Client. &nbsp;It&#39;s recorded&nbsp;in the <code>Arena._sendTo()</code> method. &nbsp;It&#39;s used to make sure that we don&#39;t spam a Client with data too often.</li>
+	<li><code>LastPacketReceivedTimestamp</code> - Unlike the other two, this one is measured from Client time and not Server time. &nbsp;It&#39;s taken from the&nbsp;<code>Packet.Timestamp</code> field. &nbsp;When setting it, it should only be set if the value is higher than it was before. &nbsp;It&#39;s used to make sure we only use the latest information from a Client. &nbsp;Because in UDP some later sent datagrams might arrive before earlier sent ones, this will discard those old ones.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>PongServer</h2>
+
+<p>The duties of <code>PongServer</code> are only to read in data from the network, write it out to Clients, and manage the&nbsp;<code>Arena</code>s.</p>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/faa298981017489829e6127e75503a86.js?file=PongServer.cs"></script>
+
+<p>&nbsp;</p>
+
+<p>Alright, lemme&nbsp;explain what&#39;s going on here:</p>
+
+<p>At the top of the class, we have quite a few <a href="https://msdn.microsoft.com/en-us/library/dd267265(v=vs.110).aspx">ConcurrentQueues</a> and <a href="https://msdn.microsoft.com/en-us/library/dd287191(v=vs.110).aspx">ConcurrentDictionaries</a>. &nbsp;The first three are used for message processing. &nbsp;Just to note, <code>_activeArenas</code> is being used as&nbsp;<a href="https://msdn.microsoft.com/en-us/library/bb359438(v=vs.110).aspx">HashSet</a> seeing as that collection doesn&#39;t have a concurrent counterpart.</p>
+
+<p>The constructor&#39;s only job is to set the <code>Port</code> number and initialize the underlying <a href="http://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient(v=vs.110).aspx"><code>UdpClient</code></a>. It&#39;s set to listen in for all incoming IPv4 connections.</p>
+
+<p><code>Start()</code> is used to mark that our Server can start handling Clients. &nbsp;<code>Shutdown()</code> is the opposite. &nbsp;If the Server was already running, it will tell any active <code>Arena</code>s to stop their games. &nbsp;<code>Close()</code> will clean up our resources.</p>
+
+<p><code>_addNewAreana()</code> is a small helper function that will startup a new <code>Arena</code> instance (also starts another <code>Thread</code>) and place it in the <code>_nextArena</code> variable.</p>
+
+<p><code>NotifyDone()</code> is only called by an <code>Arena</code>. &nbsp;It tells the <code>PongServer</code> to remove any of its connected Clients from the <code>_playerToArenaMap</code> and itself from the <code>_activeArenas</code> dictionary.</p>
+
+<p><code>Run()</code> is the main method of the <code>PongServer</code>. &nbsp;It will only execute it&#39;s code if <code>Start()</code> has been previously called. &nbsp;At first, it will spin up a new <code>Thread</code> that will handle all of our incoming and outgoing messages (over the network)&nbsp;and instantiate the first <code>Arena</code>. &nbsp;In it&#39;s <code>while(running)</code> loop, it will check if we have received a new <code>NetworkMessage</code>.</p>
+
+<ul>
+	<li>If the&nbsp;<code>Packet</code> is a <code>RequestJoin</code>, then it will add it to the next active <code>Arena</code>. &nbsp;In the case that the <code>_nextArena</code> is full (<code>TryAdd()</code> returns <code>false</code>), it will then call <code>_addArena()</code> and try to add it again.</li>
+	<li>But if the <code>Packet</code> is not a <code>RequestJoin</code>, it will try to dispatch it to which <code>Arena</code> the <code>Sender</code> is in.
+	<ul>
+		<li>If you&#39;re wondering what happens if the <code>Sender</code> is not in any active <code>Arena</code>,&nbsp;the message&nbsp;will be discarded.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>At the end of that loop <code>Thread.Sleep()</code> is called to save on CPU resources and a check is made to see if the server is still running or not.</p>
+
+<p><code>_networkRun()</code> is another important looping function. &nbsp;It is run in it&#39;s own thread (the <code>_networkThread</code>). &nbsp;While we haven&#39;t told the <code>PongServer</code> to stop, it will check to see if there are any datagrams waiting for us and write out any <code>Packet</code>s that we&#39;ve queued&nbsp;(both from&nbsp;<code>_outgoingMessages</code> and _<code>sendByPacketTo</code>). &nbsp;In the event there wasn&#39;t anything to send or receive, we have the function take a tiny nap. &nbsp;When were done listening for messages (i.e. the <code>PongServer</code> was told to shutdown), it will get all active <code>Arena</code>s to stop their <code>Thread</code>s. &nbsp;After that if there still are any connected Clients it will send a <code>ByePacket</code> to them.</p>
+
+<p><code>SendPacket()</code> and <code>SendBye()</code> are nearly identical in functionality; queuing up messages to the Clients. &nbsp;The only exception is that the later function is used to disconnect Clients.</p>
+
+<p>At the bottom of this file we have some code that is for program execution. &nbsp;In the <code>Main()</code> function we create the <code>PongServer</code>&nbsp;instance and add an interrupt handler for when the user presses&nbsp;Ctrl-C in their consoles.</p>

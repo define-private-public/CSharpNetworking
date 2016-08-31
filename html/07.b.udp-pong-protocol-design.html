@@ -1,0 +1,63 @@
+<h1>UDP Pong - Protocol Design</h1>
+
+<p>There&#39;s a lot more we have to do here than in the UDP File Transfer app. &nbsp;By design UDP is connectionless, but the problem is that we need to have our clients to be able to establish a connection, maintain it, transfer data in between, and then quit when they want. &nbsp;We&#39;ll be implementing these things ourselves.</p>
+
+<p>&nbsp;</p>
+
+<h2>Basic Packet Structure</h2>
+
+<p>The first four bytes of each packet will denote its <code>PacketType</code>. &nbsp;Instead of encoding some ASCII bytes like we did with the File Transfer example we&#39;ll be using 32 bit unsigned integers (4 bytes). &nbsp;The next eight&nbsp;bytes will be a <code>Timestamp</code> encoded in a signed 64 bit integer (8 bytes). &nbsp;After that will be the <code>Payload</code>, it&#39;s just an array of bytes. &nbsp;It can be empty or it might have something to it. &nbsp;That all depends on the <code>PacketType</code>. &nbsp;So at minimum all <code>Packet</code>s will be 12 bytes long.</p>
+
+<p>&nbsp;</p>
+
+<h2>Types of Packets</h2>
+
+<p>Here is what each <code>PacketType</code> is, with a description:</p>
+
+<ol>
+	<li><code>RequestJoin</code> - Sent by the Client to the Server requesting to join a game.</li>
+	<li><code>AcceptJoin</code>- Sent by the Server to the Client as a response to the above. &nbsp;It contains which <code>Paddle</code> the Client will be.</li>
+	<li><code>AcceptJoinAck</code> - Sent by the Client the Server to acknowledge the above.</li>
+	<li><code>Heartbeat</code> - Sent by the Client to the Server to notify its still connected.</li>
+	<li><code>HeartbeatAck</code>- Sent by the Server to the Client to acknowledge the above.</li>
+	<li><code>GameStart</code> - Sent by the Server to the Client to notify the game is going to start.</li>
+	<li><code>GameStartAck</code> - Sent by the Client to the Server to acknowledge the above.</li>
+	<li><code>PaddlePosition</code> - Sent by the Client to the Server to tell its <code>Paddle</code>&#39;s current position.</li>
+	<li><code>GameState</code> - Sent by the Server to the Client to tell it the current state of the game (<code>Paddle</code> positions, scores, <code>Ball</code> position, etc.).</li>
+	<li><code>PlaySoundEffect</code> - Sent by the Server to the Client to play a sound effect.</li>
+	<li><code>Bye</code> - Sent by either the Server or the Client to notify the other it&#39;s done with the game.</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<h2>Connection Establishment</h2>
+
+<p>This is our version of the <a href="http://www.omnisecu.com/tcpip/tcp-three-way-handshake.php">TCP Three-Way Handshake</a>. &nbsp;The Client will send a <code>RequestJoin</code> to the Server. &nbsp;The Server will respond with an&nbsp;<code>AcceptJoin</code>&nbsp;message; it&nbsp;is the only one that contains data (an unsigned 32 bit integer that denotes the Client&#39;s <code>Paddle</code>). &nbsp;Then the Client will need to respond with the <code>AcceptJoinAck</code>.&nbsp;&nbsp;Here is a diagram of the handshake:</p>
+
+<p style="text-align:center"><strong><span style="background-color:#FFFF00">TODO Handshake diagram</span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2>Maintaining the Connection</h2>
+
+<p>This is pretty simple, the client will send <code>Heartbeat</code> messages and the server will send back <code>HeartbeatAck</code> messages in response. &nbsp;The Client and Server will also record the times they got them and use it to determine if a connection has dropped or not. &nbsp;The heartbeat timeout value will be <strong>20 seconds</strong>. &nbsp;These are sent after a connection has been established, while waiting for a <code>GameStart</code>/<code>GameStartAck</code>, and while the game is being played.</p>
+
+<p style="text-align:center">&nbsp;</p>
+
+<h2>Game Start</h2>
+
+<p>The Server will not start the game until two Clients are connected. &nbsp;Once that criteria has been met, it will send out the <code>GameStart</code> messages. &nbsp;The Clients will both need to respond with a <code>GameStartAck</code> before the Server will deliver any&nbsp;<code>GameState</code> messages.</p>
+
+<p>&nbsp;</p>
+
+<h2>In Game</h2>
+
+<p>A few times per second both the Clients and the Server will send each other info about their current state. &nbsp;The Client only needs to send <code>PaddlePosition</code> <code>Packet</code>s; it contains one&nbsp;floating point number that is the <code>Paddle</code>&#39;s Y position. &nbsp;The Server will send a <code>GameState</code> <code>Packet</code> to both Clients. &nbsp;It will contain the <code>Paddle</code> &amp; <code>Ball</code> positions as well as the scores (see the diagram below for the data layout). &nbsp;Periodically the Server will send a <code>PlaySoundEffect</code> message. &nbsp;This will tell the Client it should play a sound effect. &nbsp;The name of the sound effect is encoded as a UTF-8 string.</p>
+
+<p style="text-align:center"><strong><span style="background-color:#FFFF00">TODO Packet Data diagrams</span></strong></p>
+
+<p>&nbsp;</p>
+
+<h2>Ending the Connection</h2>
+
+<p>At any time&nbsp;a Client or Server could send a <code>Bye</code>. &nbsp;This simply tells the other that the connection is over. &nbsp;If a Client sends it to the Server while in the middle of a game, the Server then needs to notify the other client the game is over. &nbsp;When the Server shuts down, it should send a <code>Bye</code> message to all connected Clients.</p>

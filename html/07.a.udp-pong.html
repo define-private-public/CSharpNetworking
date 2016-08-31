@@ -1,11 +1,11 @@
 <h1>UDP Pong</h1>
 
-<p>We&#39;re going to something a little bit more fun for this section. &nbsp;We&#39;re going to write a clone of Pong that we can play over the network. &nbsp;There will be a central server that many players can connect to play one on one matches. &nbsp;Pong really is the &quot;Hello, World!&quot; of video game programming, so I think it would be a good first game to try to network.</p>
+<p>We&#39;re going to something a little bit more fun for this example. &nbsp;We&#39;re going to write a clone of Pong that we can play over the Internet. &nbsp;There will be a central server that many players can connect to and&nbsp;play one on one matches. &nbsp;Pong really is the &quot;Hello, World!&quot; of video game programming, so I think it would be a good first game to try to network.</p>
 
 <p>&nbsp;</p>
 
 <div class="tutorial-box package">
-<p>Since we&#39;re doing video game programming I chose to use <a href="http://www.monogame.net/">MonoGame </a>as our media library. &nbsp;It&#39;s cross platform, uses C#, and pretty easy to use.&nbsp; I wanted to keep as much of this tutorials series in the command line, but I had to break that guideline here. &nbsp;I used the <a href="https://www.nuget.org/packages/MonoGame.Framework.DesktopGL/"><code>MonoGame.Framework.DesktopGL</code></a> package. &nbsp;If you&#39;re on another OS than Linux, you might want to try Windows or MacOS versions.</p>
+<p>Since we&#39;re doing video game programming I chose to use <a href="http://www.monogame.net/">MonoGame </a>as our media library. &nbsp;It&#39;s cross platform, uses C#, and it&#39;s pretty easy to use.&nbsp; I wanted to keep as much of this tutorials in this series in the command line, but I had to break that guideline here. &nbsp;I used the <a href="https://www.nuget.org/packages/MonoGame.Framework.DesktopGL/"><code>MonoGame.Framework.DesktopGL</code></a> package. &nbsp;If you&#39;re on an OS other than Linux, you might want to try Windows or MacOS versions.</p>
 
 <p><span style="color:#FF0000"><strong>Note:&nbsp;</strong></span>Audio playback is umm... kind of broken with MonoGame 3.5 (the current stable&nbsp;release at the time of writing this). &nbsp;As far as I know, this only applies to the DesktopGL package. &nbsp;This is really an un-fun problem because I&#39;ve got projects that use an older version of MonoGame that still plays sounds fine; If you&#39;re on a Linux system you might want to try getting a slightly older version if you really want to play sounds.</p>
 
@@ -20,9 +20,25 @@
 
 <h2>Architecture Overview</h2>
 
-<p>This tutorial is going to be broken up into two applications, the <code>PongServer</code> and the <code>PongClient</code> (make two separate Projects in your Solution). &nbsp;The server is going to be authoritative in handling collisions (Ball with Paddles, Goals, and top/bottom), notifying the client to play music, and position updates. &nbsp;All the client will need to do connect to the server and tell it&#39;s Paddle&#39;s Y position.</p>
+<p>This tutorial is going to be broken up into two applications, the <code>PongServer</code> and the <code>PongClient</code> (make two separate Projects in your Solution). &nbsp;The Server is going to be authoritative in handling collisions (Ball with Paddles, Goals, and top/bottom bounds), notifying the client to play sound effects, and position updates. &nbsp;All the client will need to do connect to the Server and shout it&#39;s Paddle&#39;s Y position.</p>
 
 <p>In a game instance (referred to as an <code>Arena</code> in the Server code), there will be only two players maximum, though the server should be able to handle multiple games at the same time. &nbsp;A game instance will not start unless two Clients have connected.&nbsp; If a Client connects and then disconnects, the game instance is considered done, regardless if the match had started or not.</p>
+
+<p>&nbsp;</p>
+
+<h2>Game Assets</h2>
+
+<p>Put the below files inside of a folder called <code>Content</code>&nbsp;in the Client&#39;s Project. &nbsp;Make sure that all of these files in the Project are copied to the build directory in compilation (right click on file &gt; <code>Quick Properties</code> &gt; <code>Copy to Output Directory</code>). &nbsp;I&#39;ve also got them all in <a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/PongContent.zip">.zip</a> and <a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/PongContent.tar.gz">.tar.gz</a> format if you&#39;d like.</p>
+
+<ul>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/paddle.png">paddle.png</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/ball.png">ball.png</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/establishing-connection-msg.png">establishing-connection-msg.png</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/waiting-for-game-start-msg.png">waiting-for-game-start-msg.png</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/game-over-msg.png">game-over-msg.png</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/ball-hit.wav">ball-hit.wav</a></li>
+	<li><a href="https://storage.googleapis.com/sixteenbpp/tutorials/c-sharp-networking/networked-pong/Content/score.wav">score.wav</a></li>
+</ul>
 
 <p>&nbsp;</p>
 
