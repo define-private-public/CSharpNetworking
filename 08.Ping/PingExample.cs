@@ -57,7 +57,7 @@ namespace PingExample
                 PrintPingReply(reply, ConsoleColor.Magenta);
             else
             {
-                Console.WriteLine("Ping to {0} failed:", _hostname);
+                Console.WriteLine("Synchronous Ping to {0} failed:", _hostname);
                 Console.WriteLine("  Status: {0}", reply.Status);
             }
         }
@@ -76,12 +76,15 @@ namespace PingExample
             AutoResetEvent waiter = new AutoResetEvent(false);  // Set to not-signaled
             pinger.SendAsync(_hostname, waiter);
 
+            // Check immediately for the async ping
+            if (waiter.WaitOne(_timeout) == false)
+            {
+                pinger.SendAsyncCancel();
+                Console.WriteLine("Async Ping to {0} timed out.", _hostname);
+            }
+            
             // Send it synchronously
             SendSynchronousPing(pinger, ConsoleColor.Magenta);
-
-            // Wait for the async Ping
-            if (waiter.WaitOne(_timeout) == false)
-                Console.WriteLine("Async Ping to {0} timed out.", _hostname);
         }
     }
 }
