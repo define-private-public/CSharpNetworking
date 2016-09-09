@@ -1,0 +1,66 @@
+<h1>Ping</h1>
+
+<p>Have you ever used the <a href="https://en.wikipedia.org/wiki/Ping_(networking_utility)"><code>ping</code></a> utility in Linux, OS X, or Windows before? &nbsp; &nbsp;Well, that&#39;s what this is. &nbsp;I wanted to take a little bit more of a relaxed pace for this week and introduce you to the <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation.ping(v=vs.110).aspx"><code>Ping</code></a> class. &nbsp;Instead of having to write our own ICMP code, Microsoft was nice enough to provide us with this utility in the <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation(v=vs.110).aspx"><code>System.Net.NetworkInformation</code></a> namespace. &nbsp;It operates on the simple basis of sending out pings using the <code>Ping</code> class, and then processing <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation.pingreply(v=vs.110).aspx"><code>PingReply</code></a>s. &nbsp; You probably won&#39;t find much use for this&nbsp;unless you&#39;re writing a multi-user application (such as a video game).</p>
+
+<p>Below is an example of synchronous and asynchronous (w/ callbacks) usage of the class. &nbsp;It&#39;s dead simple.</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box linux">
+<p>When I was testing this under Linux (Ubuntu flavor) I was getting an exception thrown at me when I instantiated the <code>Ping</code> class (line 68),<span style="color:#FF0000"> </span>but that only would happen when I ran the application in Debug mode from the MonoDevelop IDE. &nbsp;It was completely fine if I ran the binary via a terminal window. &nbsp;Frankly, I don&#39;t know why this happens but I&#39;m going to assume it is some sort of permission issue.</p>
+
+<p>I had no issues on Windows and OS X when running it through the IDE or the command line</p>
+</div>
+
+<div class="tutorial-box windows">
+<p>I&#39;ve sure discovered some Windows Weirdness along the way when writing these tutorials (all in the network stack). &nbsp;I found a new one today. &nbsp;If you try to make an synchronous Ping call (via <code>Send()</code>) on a <code>Ping</code> object that&#39;s already in the process of an async Ping, it will throw an error. &nbsp;This doesn&#39;t happen Linux or OS&nbsp;X.</p>
+
+<p>If you&#39;re running the Microsoft OS, go ahead and try putting the <code>SendSynchronousPing()</code> call right after the <code>pinger.SendAsync()</code> call. &nbsp;You&#39;ll see it happen.</p>
+</div>
+
+<p>&nbsp;</p>
+<script src="https://gist.github.com/define-private-public/15fc423b2ccfd8fe7ac784da77f349ef.js?file=PingExample.cs"></script>
+
+<p>&nbsp;</p>
+
+<p><code>Printing()</code> is a small function that prints some info about a <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation.pingreply(v=vs.110).aspx"><code>PingReply</code></a> to the console. &nbsp;Note that it will lock the console and asks for a colour. &nbsp;This is done so that the output from the synchronous method and the async one is not interlaced. &nbsp;The colour helps with identifying what is each.</p>
+
+<p><code>PingCompletedHanlder()</code> is a callback for the&nbsp;<a href="https://msdn.microsoft.com/en-us/library/ms144962(v=vs.110).aspx"><code>Ping.SendAsync()</code></a> method. &nbsp;It is attached to the <code>Ping.PingCompleted</code>&nbsp;event (line 69). &nbsp;It will be called regardless if an ICMP echo response was received or not. &nbsp;When we call <code>SendAsync()</code> on our <code>pinger</code> (line 77) we always need to pass in a <code>userToken</code>. &nbsp;This must be unique among the async callbacks made. &nbsp;In our case we are using an <a href="https://msdn.microsoft.com/en-us/library/system.threading.autoresetevent(v=vs.110).aspx"><code>AutoResetEvent</code></a>. &nbsp;This&nbsp;is also used to notify the calling <code>Thread</code> if the async callback has completed or not, so even if the Ping wasn&#39;t successful,&nbsp;&nbsp;<code>Set()</code> must be called on the <code>waiter</code>. &nbsp;</p>
+
+<p><code>SendSynchronousPing()</code> calls <a href="https://msdn.microsoft.com/en-us/library/ms144956(v=vs.110).aspx">Ping.Send()</a> and then print out some info based upon the the returned <code>PingReply</code>&nbsp;if it was a success or not (checked with the <code>Status</code> property). &nbsp;There are many overloads of <code>Send()</code>, but the one we&#39;re using has a timeout attached to it (set to 2000 milliseconds).</p>
+
+<p>&nbsp;</p>
+
+<div class="tutorial-box alert">
+<p>You might have noticed that there are two different asynchronous methods in <code>Ping</code>. &nbsp;<code>SendAsync()</code> and <code>SendPingAsync()</code>. &nbsp;The first one uses callbacks (like in this example). &nbsp;The second will will return a <code>PingReply</code> encased in a <code>Task</code>&nbsp;when it&#39;s completed; so it&#39;s essentially an async version of the synchronous <code>Send()</code>.</p>
+
+<p>Personally I prefer callbacks and like the first async method instead.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p>In the Main() function we poll the user for a domain name to ping. &nbsp;All of the <code>Ping</code> methods we use will resolve DNS for us. &nbsp;First we try to send the ICMP via an async method, then after it with the synchronous one. &nbsp;Note that the <code>_timeout</code> for the async method doesn&#39;t have to be put in the <code>WaitOne()</code> call, but can be set in the <code>SendAsync()</code> call too.</p>
+
+<p>&nbsp;</p>
+
+<div class="question">
+<p>What is the difference between putting the <code>_timeout</code> in the <code>SendAsync()</code> call vs. the <code>WaitOne()</code> of our <code>AutoResetEvent</code>?</p>
+
+<p class="answer-hidden" id="answer1">In the first case, the timeout will be started when the&nbsp;async call begins. &nbsp;If the async call doesn&#39;t finish in that time, it will terminate. &nbsp;But when it&#39;s put on the AutoResetEvent it will wait there for the timeout there, instead of when the async call was started. &nbsp;Think about it this way <em>&quot;Make sure the ping finishes within X amount of milliseconds,&quot;</em> or <em>&quot;Check if the ping has finished <u>by a certain point</u> within X amount of milliseconds.&quot;</em></p>
+
+<p><button onclick="showAnswer('answer1');">Show Answer</button></p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>PingReply</h2>
+
+<p>There isn&#39;t too much to talk about this. &nbsp;It&#39;s just a data structure that&nbsp;contains information about our ping. &nbsp;The important fields to look at are <code>Status</code>&nbsp;and&nbsp;<code>RoundtripTime</code>.&nbsp;That first one can be anything from the <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation.ipstatus(v=vs.110).aspx"><code>IPStatus</code></a> enumeration. &nbsp;The second is what&#39;s really valuable to us. &nbsp;It is how long (in milliseconds) the Ping took to get to the destination and back to us. &nbsp;By the nature of how networks are structured, <span style="color:#FF0000">the time it took to go to and the time it took to go back are not the same</span>. &nbsp;You can&#39;t divide that value by 2 and think <em>&quot;This is how long it takes to send a message one way,&quot;</em> that&#39;s very, very wrong.</p>
+
+<p>I also want to note that the pings we sent had payloads of 0 bytes (see the <code>Buffer</code> field). &nbsp;Normally these are stuffed with some data, but it&#39;s not always necessary.</p>
+
+<p>&nbsp;</p>
+
+<h2>PingOptions</h2>
+
+<p>In our code, we didn&#39;t take advantage of the <a href="https://msdn.microsoft.com/en-us/library/system.net.networkinformation.pingoptions(v=vs.110).aspx"><code>PingOptions</code></a> class. &nbsp;It has only two fields; <code>DontFragment</code> and <code>Ttl</code>. &nbsp;The former is boolean value that tells our pinger that we should <span style="color:#FF0000">not</span> fragment the ICMP packets. &nbsp;It&#39;s default value is false.&nbsp;&nbsp;Along with setting larger <code>Buffer</code>s this can be&nbsp;useful to test the MTUs of devices the ping is sent through. &nbsp;The later stands for &quot;Time To Live,&quot; which is fancy talk for <em>&quot;How many times can this Ping bounce from device to device before dying.&quot;</em> &nbsp;The default value is 128, but setting it to a lower value is useful to test how many hops on the internet your connection needs to take to get to its destination.</p>
