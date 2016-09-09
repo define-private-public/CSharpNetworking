@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
-namespace Compression
+namespace CompressionExample
 {
     class CompressionExample
     {

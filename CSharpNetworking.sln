@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "07.e.UdpPongServer", "07.e.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "07.g.UdpPongClient", "07.g.UdpPongClient\07.g.UdpPongClient.csproj", "{2CB992D3-8E60-44F5-B833-98204CA46FBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "08.Ping", "08.Ping\08.Ping.csproj", "{E0FDD020-2683-473C-A176-5C21DB912103}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -85,6 +87,10 @@ Global
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Debug|x86.Build.0 = Debug|x86
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Release|x86.ActiveCfg = Release|x86
 		{D9EF0C15-6A4F-49C2-8D54-A57863F6D868}.Release|x86.Build.0 = Release|x86
+		{E0FDD020-2683-473C-A176-5C21DB912103}.Debug|x86.ActiveCfg = Debug|x86
+		{E0FDD020-2683-473C-A176-5C21DB912103}.Debug|x86.Build.0 = Debug|x86
+		{E0FDD020-2683-473C-A176-5C21DB912103}.Release|x86.ActiveCfg = Release|x86
+		{E0FDD020-2683-473C-A176-5C21DB912103}.Release|x86.Build.0 = Release|x86
 		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Debug|x86.ActiveCfg = Debug|x86
 		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Debug|x86.Build.0 = Debug|x86
 		{E28D759D-2DE2-408D-89C3-70F4D00101C8}.Release|x86.ActiveCfg = Release|x86
