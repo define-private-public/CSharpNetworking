@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="08.Ping/08.Ping.csproj">
+﻿<Properties StartupItem="09.c.TcpSocketClientExample/09.c.TcpSocketClientExample.csproj">
   <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.ItemProperties.03.c.TcpChatMessenger PreferredExecutionTarget="MonoDevelop.Default" />

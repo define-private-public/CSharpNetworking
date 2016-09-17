@@ -1,0 +1,21 @@
+<h1>Socket Class Intro - Recap</h1>
+
+<p>&nbsp;</p>
+
+<p style="text-align:center"><span style="background-color:#FFFF00">TODO screenshot of C server &amp; C# Client interacting together</span></p>
+
+<p>&nbsp;</p>
+
+<p>There wasn&#39;t too much that was covered here, but we got our feet wet with using the raw <code>Socket</code> class. &nbsp;In the next section we will cover usage of the async methods in&nbsp;<code>Socket</code>. &nbsp;Get ready for callbacks everywhere!</p>
+
+<div class="h-line">
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>
+
+<h2>Why is using the Socket class directly more efficient than something like TcpClient or UdpClient?</h2>
+
+<p>As I said before, classes like <code>TcpClient</code> and <code>UdpClient</code> have and underlying <code>Socket</code> object (which can actually be accessed via the <code>Client</code> property in both).&nbsp;&nbsp;<em>&quot;Why would we even want to use </em><code>Socket</code><em> if it&#39;s more complicated?&quot;</em> &nbsp;you might ask.</p>
+
+<p>If you chose to use <code>TcpClient</code> or <code>UdpClient</code> there is a slight amount of overhead versus working directly with a <code>Socket</code>. &nbsp;If you truly&nbsp;need a high octane <a href="https://fun.irq.dk/funroll-loops.org/">riced</a> app, then &nbsp;go with <code>Socket</code>. &nbsp;The performance/efficiency benefits mostly come from using the async methods of <code>Socket</code>, which are all callback based. &nbsp;Yes, yes. &nbsp;<code>TcpClient</code> and <code>UdpClient</code> do have async methods too, but the Socket <code>class</code> has a lot more of them which&nbsp;gives you way more flexibility than the other two do.</p>

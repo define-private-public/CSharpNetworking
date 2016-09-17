@@ -1,0 +1,21 @@
+<h1>Socket Class Intro</h1>
+
+<p>In &nbsp;<a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcpclient(v=vs.110).aspx"><code>TcpClient</code></a>,&nbsp;<a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.tcplistener(v=vs.110).aspx"><code>TcpListener</code></a>, and <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.udpclient(v=vs.110).aspx"><code>UdpClient</code></a> (as well as many other classes) there is an underlying <a href="https://msdn.microsoft.com/en-us/library/system.net.sockets.socket(v=vs.110).aspx"><code>Socket</code></a> object. &nbsp;If you&#39;re looking for something simple to work with&nbsp;or want to get an application developed quickly, I&#39;d recommend using those&nbsp;objects first. &nbsp;Though if you need more performance&nbsp;or want something that is much closer to the <a href="https://en.wikipedia.org/wiki/Berkeley_sockets">Berkeley/POSIX Socket API</a>, then the <code>Socket</code> class is what you&#39;ll want to use.</p>
+
+<p>For this part of the series, I will present you with some C code (that uses the Berkeley Socket API)&nbsp;and then show you a C# port of that&nbsp;code. &nbsp;The C code is adapted from this <a href="https://en.wikibooks.org/wiki/C_Programming/Networking_in_UNIX">Wikibooks article</a>. &nbsp;<strong>I will not be showing you any usage of the asynchronous method right now.</strong> &nbsp;I want to start things off simple. <strong>We will cover async usage of the <code>Socket</code> class in the next section.</strong></p>
+
+<p>&nbsp;</p>
+
+<h2><strong>The Application</strong></h2>
+
+<p>The app is pretty simple. &nbsp;The server will open up a socket and wait for incoming connections. &nbsp;When a new client has connected, it will print some info to the terminal window and respond to the client with a short message. &nbsp;Then once it has been&nbsp;sent it will close the connection with the client. &nbsp;All of this will run over TCP.</p>
+
+<p><span style="color:#FF0000">I&#39;m not going to do an explanation of what&#39;s&#39; going on like I usually do.</span> &nbsp;I think the code is very straightforward;&nbsp;there are comments sprinkled all over that should explain what each line does.</p>
+
+<div class="h-line">
+<p>s</p>
+</div>
+
+<p>&nbsp;</p>
+
+<p><strong>Compiling &amp; running the C code for this section is completely optional.</strong> &nbsp;&nbsp;But make sure to read through it and try to understand a little bit of what&#39;s going on. &nbsp;If you want to compile and run the C code, you&#39;ll need to grab yourself a C compiler. &nbsp;I used <a href="http://clang.llvm.org/">clang</a>&nbsp;(on Linux)&nbsp;when writing the C code, but it will also compile with something like <a href="http://gcc.gnu.org/">gcc</a> (on Windows via <a href="https://www.cygwin.com/">Cygwin</a>). &nbsp;If you don&#39;t know or understand C that well (or the POSIX interface), don&#39;t worry about it.</p>
