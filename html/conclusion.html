@@ -1,0 +1,41 @@
+<h1>Conclusion</h1>
+
+<p>And now that we have covered the basics of&nbsp;<code>Socket</code>, I would like to end this tutorial series here. &nbsp;I feel that I have given you enough example projects and explanations of how to use the networking APIs (and then some) in the <code>System.Net</code> namespace. &nbsp;From here, I&#39;m fairly confident that anyone who has gone through this course should be able to write their own networked C# appliations and delve into some more advanced topics on their own.</p>
+
+<p>&nbsp;</p>
+
+<h2>Where To Go From Here</h2>
+
+<p>If you want to learn more, the best thing to do would be to pick and a project you want to make, and then build it! &nbsp;I&#39;m really partial to video games; I&nbsp;already showed you how to network Pong earlier so you have someplace to start.</p>
+
+<p>There were two topics that I didn&#39;t get to cover that I really wanted to. &nbsp;(Sorry, life got a little busy for me in the past few months).</p>
+
+<ol>
+	<li>Asynchronous Sockets. &nbsp;This isn&#39;t simply calling functions that are marked with the <code>async</code> keyword, it&#39;s a hole different beast &amp; paradigm. &nbsp;Here are some good places to start on the MSDN documentation:<br />
+	<br />
+	<a href="https://msdn.microsoft.com/en-us/library/5w7b7x5f(v=vs.110).aspx">Using an Asynchronous Server Socket</a><br />
+	<a href="https://msdn.microsoft.com/en-us/library/fx6588te(v=vs.110).aspx">Asynchronous Server Socket Example</a><br />
+	<a href="https://msdn.microsoft.com/en-us/library/bbx2eya8(v=vs.110).aspx">Using an Asynchronous Client Socket</a><br />
+	<a href="https://msdn.microsoft.com/en-us/library/bew39x2a(v=vs.110).aspx">Asynchronous Client Socket Example</a><br />
+	&nbsp;</li>
+	<li>SSL/TLS &amp; Security. &nbsp;This is vital in modern computing and communications. &nbsp;There are way too many things to count that I could go over. &nbsp;<a href="https://msdn.microsoft.com/en-us/library/fkytk30f.aspx">Security in the .NET Framework</a> is a good stepping stone, but poking through <a href="https://msdn.microsoft.com/en-us/library/system.net.security.sslstream(v=vs.110).aspx"><code>SslStream</code></a>&nbsp;should be something to do.</li>
+</ol>
+
+<p>There are an ocean of third party (higher level) communication libraries available for C#. &nbsp;Some of the more popular ones include <a href="http://www.jenkinssoftware.com/">RakNet</a>, <a href="https://github.com/lidgren/lidgren-network-gen3">Lidgren</a>, and <a href="http://zeromq.org/">ZeroMQ</a>. &nbsp;Each has its own purpose and complexity. &nbsp;You might find them a bit more useful and easier than the <code>System.Net</code> namespace.</p>
+
+<p>If you&#39;d like to study distributed data comm. <a href="https://cheatdeath.github.io/research-bittorrent-doc/">here is pretty cool&nbsp;article</a> on how to implement the BitTorrent protocol in C#.</p>
+
+<p>&nbsp;</p>
+
+<h2>All of the Source</h2>
+
+<p>If you were following these tutorials as I posted them, I only gave you the code for the projects in gists. &nbsp;Available now is a repo that contains everything (and the project files). &nbsp;You can <a href="https://gitlab.com/define-private-public/CSharpNetworking">find it here</a> (<a href="https://github.com/define-private-public/CSharpNetworking">GitHub mirror</a>).</p>
+
+<p>&nbsp;</p>
+
+<h2>Least Significant Bits</h2>
+
+<p>My gratitude to&nbsp;<a href="https://twitter.com/halfspiral">Jason Francis (@halfspiral)</a> for helping me test the Pong clone.</p>
+
+<p>I&#39;d like to make note of&nbsp;the folks over at <a href="https://www.reddit.com/r/csharp/">/r/csharp</a>. &nbsp;They provided some ideas for tutorials, extra insight on things, a code correction or two, and were the majority of my views. &nbsp;I don&#39;t think I&#39;d put in&nbsp;as much effort&nbsp;as I did if it wasn&#39;t for the community there. &nbsp;Thank you.</p>
+
